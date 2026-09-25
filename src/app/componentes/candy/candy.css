@@ -1,0 +1,19 @@
+.candy {
+  padding: 1.5rem;
+}
+
+.candy__seccion {
+  margin-bottom: 2.5rem;
+}
+
+.candy__categoria {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-borde);
+  padding-bottom: 0.5rem;
+}
+
+.candy__grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+}

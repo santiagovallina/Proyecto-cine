@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.tarjeta:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-violeta);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+}
+
+.tarjeta__poster {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.tarjeta__nombre {
+  margin: 0.75rem 0.75rem 0.25rem;
+  font-size: 1rem;
+}
+
+.tarjeta__generos {
+  margin: auto 0.75rem 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tarjeta__genero {
+  font-size: 0.75rem;
+  color: var(--color-violeta);
+  border: 1px solid var(--color-violeta);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}

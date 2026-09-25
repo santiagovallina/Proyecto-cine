@@ -1,1 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --color-fondo: #0B0A10;
+  --color-superficie: #16131F;
+  --color-texto: #EDEBF2;
+  --color-texto-muted: #8B87A0;
+  --color-borde: #2A2635;
+  --color-violeta: #A78BFA;
+  --color-violeta-cta: #7C3AED;
+  --color-accesible: #3DD6C4;
+
+  --font-principal: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--font-principal);
+}

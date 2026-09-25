@@ -1,0 +1,10 @@
+.inicio {
+  padding: 1.5rem;
+}
+
+.inicio__grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+  justify-content: center;
+  gap: 1.5rem;
+}

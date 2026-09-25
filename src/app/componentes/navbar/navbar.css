@@ -1,0 +1,89 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.navbar a {
+  color: var(--color-texto);
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.navbar__brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar__links a {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.navbar__links a:hover {
+  transform: scale(1.12);
+}
+
+.navbar__links a.activo {
+  color: var(--color-violeta);
+}
+
+.navbar__usuario {
+  position: relative;
+}
+
+.navbar__usuario-boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  background: none;
+  border: 1px solid var(--color-borde);
+  border-radius: 50%;
+  color: var(--color-texto);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.navbar__usuario-boton:hover {
+  border-color: var(--color-violeta);
+  color: var(--color-violeta);
+}
+
+.navbar__menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 11rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 10px;
+  padding: 0.4rem;
+  z-index: 10;
+}
+
+.navbar__menu a {
+  font-size: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.navbar__menu a:hover {
+  background: var(--color-borde);
+  color: var(--color-violeta);
+}

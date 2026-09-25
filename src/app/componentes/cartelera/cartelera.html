@@ -1,0 +1,41 @@
+<section class="cartelera">
+  <h1 class="cartelera__titulo">Cartelera</h1>
+
+  <div class="cartelera__filtros">
+    <input
+      class="cartelera__buscador"
+      type="search"
+      placeholder="Buscar película..."
+      [formField]="busquedaForm.texto"
+    />
+
+    <div class="cartelera__generos">
+      <button
+        type="button"
+        class="cartelera__genero"
+        [class.cartelera__genero--activo]="generoSeleccionado() === null"
+        (click)="seleccionarGenero(null)"
+      >
+        Todos
+      </button>
+      @for (genero of generos(); track genero) {
+        <button
+          type="button"
+          class="cartelera__genero"
+          [class.cartelera__genero--activo]="generoSeleccionado() === genero"
+          (click)="seleccionarGenero(genero)"
+        >
+          {{ genero }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="cartelera__grilla">
+    @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+      <app-tarjeta-pelicula [pelicula]="pelicula" />
+    } @empty {
+      <p class="cartelera__vacio">No se encontraron películas.</p>
+    }
+  </div>
+</section>

@@ -1,0 +1,16 @@
+<section class="candy">
+  <h1 class="candy__titulo">Candy</h1>
+
+  @for (categoria of categorias; track categoria) {
+    @if (productosDe(categoria).length > 0) {
+      <div class="candy__seccion">
+        <h2 class="candy__categoria">{{ categoria }}</h2>
+        <div class="candy__grilla">
+          @for (producto of productosDe(categoria); track producto.id) {
+            <app-tarjeta-producto-candy [producto]="producto" />
+          }
+        </div>
+      </div>
+    }
+  }
+</section>

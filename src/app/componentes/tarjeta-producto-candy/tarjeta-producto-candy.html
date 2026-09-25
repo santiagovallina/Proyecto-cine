@@ -1,0 +1,12 @@
+<article class="producto">
+  @if (producto.imagen_url) {
+    <img class="producto__imagen" [src]="producto.imagen_url" [alt]="producto.nombre" />
+  }
+  <div class="producto__info">
+    <h3 class="producto__nombre">{{ producto.nombre }}</h3>
+    @if (producto.descripcion) {
+      <p class="producto__descripcion">{{ producto.descripcion }}</p>
+    }
+    <p class="producto__precio">{{ producto.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</p>
+  </div>
+</article>

@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.producto {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.producto:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-violeta);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+}
+
+.producto__imagen {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.producto__info {
+  padding: 0.75rem;
+}
+
+.producto__nombre {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.producto__descripcion {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-texto-muted);
+}
+
+.producto__precio {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-violeta);
+}

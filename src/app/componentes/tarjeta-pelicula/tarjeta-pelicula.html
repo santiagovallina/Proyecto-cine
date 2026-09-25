@@ -1,0 +1,11 @@
+<article class="tarjeta">
+  @if (pelicula.imagen_url) {
+    <img class="tarjeta__poster" [src]="pelicula.imagen_url" [alt]="pelicula.nombre" />
+  }
+  <h2 class="tarjeta__nombre">{{ pelicula.nombre }}</h2>
+  <p class="tarjeta__generos">
+    @for (genero of pelicula.generos; track genero.nombre) {
+      <span class="tarjeta__genero">{{ genero.nombre }}</span>
+    }
+  </p>
+</article>

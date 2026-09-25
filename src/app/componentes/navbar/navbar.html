@@ -1,0 +1,31 @@
+<nav class="navbar">
+  <a routerLink="/" class="navbar__brand">🎬 Cine</a>
+
+  <ul class="navbar__links">
+    <li><a routerLink="/cartelera" routerLinkActive="activo">Cartelera</a></li>
+    <li><a routerLink="/candy" routerLinkActive="activo">Candy</a></li>
+    <li><a routerLink="/complejo" routerLinkActive="activo">Complejo</a></li>
+  </ul>
+
+  <div class="navbar__usuario">
+    <button
+      type="button"
+      class="navbar__usuario-boton"
+      aria-label="Cuenta de usuario"
+      [attr.aria-expanded]="menuAbierto()"
+      (click)="alternarMenu()"
+    >
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+      </svg>
+    </button>
+
+    @if (menuAbierto()) {
+      <div class="navbar__menu">
+        <a routerLink="/login" (click)="cerrarMenu()">Iniciar sesión</a>
+        <a routerLink="/register" (click)="cerrarMenu()">Registrarse</a>
+      </div>
+    }
+  </div>
+</nav>

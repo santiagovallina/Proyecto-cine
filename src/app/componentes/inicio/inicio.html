@@ -1,0 +1,11 @@
+<section class="inicio">
+  <h1 class="inicio__titulo">Las más vendidas</h1>
+
+  <div class="inicio__grilla">
+    @for (pelicula of masVendidas(); track pelicula.id) {
+      <app-tarjeta-pelicula [pelicula]="pelicula" />
+    } @empty {
+      <p class="inicio__vacio">Todavía no hay películas para mostrar.</p>
+    }
+  </div>
+</section>

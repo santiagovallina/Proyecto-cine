@@ -83,7 +83,29 @@
   white-space: nowrap;
 }
 
-.navbar__menu a:hover {
+.navbar__menu a:hover,
+.navbar__opcion:hover {
   background: var(--color-borde);
   color: var(--color-violeta);
+}
+
+.navbar__saludo {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--color-texto-muted);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.navbar__opcion {
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  color: var(--color-texto);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }

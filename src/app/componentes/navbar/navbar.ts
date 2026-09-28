@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Auth } from '../../servicios/auth';
 
 @Component({
   imports: [RouterLink, RouterLinkActive],
@@ -9,6 +10,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class Navbar {
   private elementRef = inject(ElementRef);
+  private router = inject(Router);
+
+  auth = inject(Auth);
 
   menuAbierto = signal(false);
 
@@ -18,6 +22,12 @@ export class Navbar {
 
   cerrarMenu() {
     this.menuAbierto.set(false);
+  }
+
+  async cerrarSesion() {
+    await this.auth.salir();
+    this.cerrarMenu();
+    this.router.navigate(['/cartelera']);
   }
 
   @HostListener('document:click', ['$event'])

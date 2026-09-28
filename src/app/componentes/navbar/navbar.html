@@ -23,8 +23,15 @@
 
     @if (menuAbierto()) {
       <div class="navbar__menu">
-        <a routerLink="/login" (click)="cerrarMenu()">Iniciar sesión</a>
-        <a routerLink="/register" (click)="cerrarMenu()">Registrarse</a>
+        @if (!auth.cargando()) {
+          @if (auth.logueado()) {
+            <p class="navbar__saludo">Hola, {{ auth.perfil()?.nombre || 'usuario' }}</p>
+            <button type="button" class="navbar__opcion" (click)="cerrarSesion()">Cerrar sesión</button>
+          } @else {
+            <a routerLink="/login" (click)="cerrarMenu()">Iniciar sesión</a>
+            <a routerLink="/register" (click)="cerrarMenu()">Registrarse</a>
+          }
+        }
       </div>
     }
   </div>

@@ -1,1 +1,112 @@
-<p>register works!</p>
+<section class="registro">
+  <h1 class="registro__titulo">Crear cuenta</h1>
+  <p class="registro__intro">Registrate y obtené un 20% de descuento en tu primera compra.</p>
+
+  <form class="registro__form" (submit)="enviar($event)" novalidate>
+    <div class="registro__campo">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" [formField]="registroForm.email" />
+      @if (registroForm.email().touched()) {
+        @for (error of registroForm.email().errors(); track error.kind) {
+          <p class="registro__error">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    <div class="registro__campo">
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" autocomplete="new-password" [formField]="registroForm.password" />
+      @if (registroForm.password().touched()) {
+        @for (error of registroForm.password().errors(); track error.kind) {
+          <p class="registro__error">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    <div class="registro__fila">
+      <div class="registro__campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" autocomplete="given-name" [formField]="registroForm.nombre" />
+        @if (registroForm.nombre().touched()) {
+          @for (error of registroForm.nombre().errors(); track error.kind) {
+            <p class="registro__error">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="registro__campo">
+        <label for="apellido">Apellido</label>
+        <input id="apellido" type="text" autocomplete="family-name" [formField]="registroForm.apellido" />
+        @if (registroForm.apellido().touched()) {
+          @for (error of registroForm.apellido().errors(); track error.kind) {
+            <p class="registro__error">{{ error.message }}</p>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="registro__campo">
+      <label for="fecha_nacimiento">Fecha de nacimiento</label>
+      <input id="fecha_nacimiento" type="date" [max]="hoy" [formField]="registroForm.fecha_nacimiento" />
+      @if (registroForm.fecha_nacimiento().touched()) {
+        @for (error of registroForm.fecha_nacimiento().errors(); track error.kind) {
+          <p class="registro__error">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    <div class="registro__fila">
+      <div class="registro__campo">
+        <label for="tipo_sangre">Tipo de sangre</label>
+        <select id="tipo_sangre" [formField]="registroForm.tipo_sangre">
+          <option value="">Elegí una opción</option>
+          @for (tipo of tiposSangre; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+        @if (registroForm.tipo_sangre().touched()) {
+          @for (error of registroForm.tipo_sangre().errors(); track error.kind) {
+            <p class="registro__error">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="registro__campo">
+        <label for="color_ojos">Color de ojos</label>
+        <select id="color_ojos" [formField]="registroForm.color_ojos">
+          <option value="">Elegí una opción</option>
+          @for (color of coloresOjos; track color) {
+            <option [value]="color">{{ color }}</option>
+          }
+        </select>
+        @if (registroForm.color_ojos().touched()) {
+          @for (error of registroForm.color_ojos().errors(); track error.kind) {
+            <p class="registro__error">{{ error.message }}</p>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="registro__campo">
+      <label for="dias_vacaciones">Días de vacaciones por año</label>
+      <input id="dias_vacaciones" type="number" [formField]="registroForm.dias_vacaciones" />
+      @if (registroForm.dias_vacaciones().touched()) {
+        @for (error of registroForm.dias_vacaciones().errors(); track error.kind) {
+          <p class="registro__error">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    @if (errorServidor()) {
+      <p class="registro__error registro__error--general">{{ errorServidor() }}</p>
+    }
+
+    <button class="registro__boton" type="submit" [disabled]="registroForm().submitting()">
+      {{ registroForm().submitting() ? 'Creando cuenta...' : 'Crear cuenta' }}
+    </button>
+
+    <p class="registro__pie">
+      ¿Ya tenés cuenta? <a routerLink="/login">Iniciá sesión</a>
+    </p>
+  </form>
+</section>

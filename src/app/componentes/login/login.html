@@ -1,1 +1,37 @@
-<p>login works!</p>
+<section class="login">
+  <h1 class="login__titulo">Iniciar sesión</h1>
+
+  <form class="login__form" (submit)="enviar($event)" novalidate>
+    <div class="login__campo">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" [formField]="loginForm.email" />
+      @if (loginForm.email().touched()) {
+        @for (error of loginForm.email().errors(); track error.kind) {
+          <p class="login__error">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    <div class="login__campo">
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" autocomplete="current-password" [formField]="loginForm.password" />
+      @if (loginForm.password().touched()) {
+        @for (error of loginForm.password().errors(); track error.kind) {
+          <p class="login__error">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    @if (errorServidor()) {
+      <p class="login__error login__error--general">{{ errorServidor() }}</p>
+    }
+
+    <button class="login__boton" type="submit" [disabled]="loginForm().submitting()">
+      {{ loginForm().submitting() ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+
+    <p class="login__pie">
+      ¿No tenés cuenta? <a routerLink="/register">Registrate</a>
+    </p>
+  </form>
+</section>

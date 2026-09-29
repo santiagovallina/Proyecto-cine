@@ -1,6 +1,8 @@
 import { computed, inject, Service, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { User } from '@supabase/supabase-js';
-import { Perfil } from '../modelos/perfil';
+import { filter, firstValueFrom, take } from 'rxjs';
+import { Perfil, Rol } from '../modelos/perfil';
 import { RegistroData } from '../modelos/registro-data';
 import { Supabase } from './supabase';
 
@@ -14,6 +16,8 @@ export class Auth {
 
   logueado = computed(() => this.usuario() !== null);
   rol = computed(() => this.perfil()?.rol ?? null);
+
+  private cargando$ = toObservable(this.cargando);
 
   constructor() {
     this.supabase.auth.onAuthStateChange((_evento, sesion) => {
@@ -32,6 +36,23 @@ export class Auth {
     const { data } = await this.supabase.from('perfiles').select('*').eq('id', id).single();
     this.perfil.set(data as Perfil | null);
     this.cargando.set(false);
+  }
+
+  /** Se resuelve apenas termina de saberse si hay sesión (y, si la hay, su perfil). */
+  listo(): Promise<void> {
+    return firstValueFrom(this.cargando$.pipe(filter((cargando) => !cargando), take(1))).then(
+      () => undefined,
+    );
+  }
+
+  /**
+   * Pide el rol directo a la base, sin depender de que el oyente global
+   * ya haya terminado de cargar el perfil (evita la carrera justo después
+   * de un login recién hecho).
+   */
+  async obtenerRol(id: string): Promise<Rol | null> {
+    const { data } = await this.supabase.from('perfiles').select('rol').eq('id', id).single();
+    return (data as { rol: Rol } | null)?.rol ?? null;
   }
 
   registrar(datos: RegistroData) {

@@ -33,14 +33,22 @@ export class Login {
 
     submit(this.loginForm, async () => {
       const datos = this.loginModel();
-      const { error } = await this.auth.ingresar(datos.email, datos.password);
+      const { data, error } = await this.auth.ingresar(datos.email, datos.password);
 
-      if (error) {
+      if (error || !data.user) {
         this.errorServidor.set('Email o contraseña incorrectos');
         return;
       }
 
-      this.router.navigate(['/cartelera']);
+      const rol = await this.auth.obtenerRol(data.user.id);
+
+      if (rol === 'admin') {
+        this.router.navigate(['/admin']);
+      } else if (rol === 'empleado') {
+        this.router.navigate(['/empleado']);
+      } else {
+        this.router.navigate(['/cartelera']);
+      }
     });
   }
 }

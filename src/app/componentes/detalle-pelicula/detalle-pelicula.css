@@ -1,0 +1,116 @@
+.detalle {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.detalle__cabecera {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detalle__poster {
+  width: 220px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.detalle__nombre {
+  margin: 0 0 0.75rem;
+}
+
+.detalle__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.detalle__genero,
+.detalle__duracion {
+  font-size: 0.8rem;
+  color: var(--color-violeta);
+  border: 1px solid var(--color-violeta);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+}
+
+.detalle__edad {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: #b91c1c;
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+}
+
+.detalle__aviso {
+  font-size: 0.85rem;
+  color: #fca5a5;
+  margin: 0 0 1rem;
+}
+
+.detalle__sinopsis {
+  color: var(--color-texto-muted);
+  line-height: 1.6;
+}
+
+.detalle__funciones h2 {
+  margin-bottom: 1rem;
+}
+
+.detalle__dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.detalle__dia {
+  padding: 0.5rem 0.9rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.detalle__dia--activo {
+  background: var(--color-violeta-cta);
+  border-color: var(--color-violeta-cta);
+  color: #fff;
+}
+
+.detalle__horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.detalle__horario {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+}
+
+.detalle__hora {
+  font-weight: 700;
+  color: var(--color-violeta);
+  min-width: 3.5rem;
+}
+
+.detalle__dato {
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}
+
+.detalle__vacio {
+  color: var(--color-texto-muted);
+}

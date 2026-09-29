@@ -15,8 +15,19 @@
 }
 
 .navbar__brand {
-  font-weight: 700;
-  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo {
+  display: block;
+  height: 2.5rem;
+  width: auto;
+  transition: transform 0.2s;
+}
+
+.navbar__brand:hover .navbar__logo {
+  transform: scale(1.08);
 }
 
 .navbar__links {

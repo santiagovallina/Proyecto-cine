@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./componentes/candy/candy').then((m) => m.Candy),
   },
   {
+    path: 'pelicula/:id',
+    loadComponent: () =>
+      import('./componentes/detalle-pelicula/detalle-pelicula').then((m) => m.DetallePelicula),
+  },
+  {
     path: 'complejo',
     loadComponent: () => import('./componentes/complejo/complejo').then((m) => m.Complejo),
   },

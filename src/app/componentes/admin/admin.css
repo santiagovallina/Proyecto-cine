@@ -1,3 +1,78 @@
 .panel {
   padding: 1.5rem;
 }
+
+.crear-funcion {
+  max-width: 30rem;
+  margin-top: 1.5rem;
+}
+
+.crear-funcion__ayuda {
+  color: var(--color-texto-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.crear-funcion__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.crear-funcion__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.crear-funcion__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.crear-funcion__campo label {
+  font-size: 0.9rem;
+  color: var(--color-texto-muted);
+}
+
+.crear-funcion__campo input,
+.crear-funcion__campo select {
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+}
+
+.crear-funcion__exito {
+  color: #4ade80;
+  font-size: 0.9rem;
+}
+
+.crear-funcion__error {
+  color: #f87171;
+  font-size: 0.9rem;
+}
+
+.crear-funcion button[type='submit'] {
+  padding: 0.7rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-violeta-cta);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.crear-funcion button[type='submit']:disabled {
+  opacity: 0.5;
+}
+
+.crear-funcion__lista {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}

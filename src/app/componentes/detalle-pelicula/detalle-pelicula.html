@@ -1,0 +1,63 @@
+@if (pelicula(); as p) {
+  <section class="detalle">
+    <div class="detalle__cabecera">
+      @if (p.imagen_url) {
+        <img class="detalle__poster" [src]="p.imagen_url" [alt]="p.nombre" />
+      }
+
+      <div class="detalle__info">
+        <h1 class="detalle__nombre">{{ p.nombre }}</h1>
+
+        <div class="detalle__etiquetas">
+          @for (genero of p.generos; track genero.nombre) {
+            <span class="detalle__genero">{{ genero.nombre }}</span>
+          }
+          <span class="detalle__duracion">{{ p.duracion_min }} min</span>
+          @if (p.restriccion_edad > 0) {
+            <span class="detalle__edad">+{{ p.restriccion_edad }}</span>
+          }
+        </div>
+
+        @if (p.restriccion_edad > 0) {
+          <p class="detalle__aviso">
+            Película apta para mayores de {{ p.restriccion_edad }} años. Los menores deben ir acompañados de un adulto.
+          </p>
+        }
+
+        <p class="detalle__sinopsis">{{ p.sinopsis }}</p>
+      </div>
+    </div>
+
+    <div class="detalle__funciones">
+      <h2>Elegí fecha</h2>
+
+      <div class="detalle__dias">
+        @for (dia of dias; track dia) {
+          <button
+            type="button"
+            class="detalle__dia"
+            [class.detalle__dia--activo]="dia === fechaSeleccionada()"
+            (click)="seleccionarFecha(dia)"
+          >
+            {{ dia | date: 'EEE d/M' }}
+          </button>
+        }
+      </div>
+
+      @if (!cargandoFunciones()) {
+        <div class="detalle__horarios">
+          @for (funcion of funciones(); track funcion.id) {
+            <div class="detalle__horario">
+              <span class="detalle__hora">{{ funcion.inicia_en | date: 'HH:mm' }}</span>
+              <span class="detalle__dato">{{ funcion.formato }}</span>
+              <span class="detalle__dato">{{ funcion.idioma }}</span>
+              <span class="detalle__dato">{{ funcion.sala?.nombre }}</span>
+            </div>
+          } @empty {
+            <p class="detalle__vacio">No hay funciones para este día.</p>
+          }
+        </div>
+      }
+    </div>
+  </section>
+}

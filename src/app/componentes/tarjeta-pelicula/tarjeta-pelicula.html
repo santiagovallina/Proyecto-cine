@@ -1,4 +1,4 @@
-<article class="tarjeta">
+<article class="tarjeta" [routerLink]="['/pelicula', pelicula.id]">
   @if (pelicula.imagen_url) {
     <img class="tarjeta__poster" [src]="pelicula.imagen_url" [alt]="pelicula.nombre" />
   }

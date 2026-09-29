@@ -6,6 +6,17 @@ import { Supabase } from './supabase';
 export class Peliculas {
     private supabase = inject(Supabase).client;
 
+    async getPelicula(id: number): Promise<Pelicula> {
+        const { data, error } = await this.supabase
+            .from('peliculas')
+            .select('*, generos(nombre)')
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+        return data as Pelicula;
+    }
+
     async getPeliculas(): Promise<Pelicula[]> {
         const { data, error } = await this.supabase
             .from('peliculas')

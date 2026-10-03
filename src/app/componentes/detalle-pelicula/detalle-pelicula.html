@@ -1,4 +1,6 @@
-@if (pelicula(); as p) {
+@if (!pelicula()) {
+  <app-spinner />
+} @else if (pelicula(); as p) {
   <section class="detalle">
     <div class="detalle__cabecera">
       @if (p.imagen_url) {
@@ -44,7 +46,9 @@
         }
       </div>
 
-      @if (!cargandoFunciones()) {
+      @if (cargandoFunciones()) {
+        <app-spinner />
+      } @else {
         <div class="detalle__horarios">
           @for (funcion of funciones(); track funcion.id) {
             <div class="detalle__horario">

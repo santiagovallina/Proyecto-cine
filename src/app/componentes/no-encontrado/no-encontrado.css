@@ -1,0 +1,14 @@
+.no-encontrado {
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.no-encontrado h1 {
+  font-size: 3rem;
+  color: var(--color-violeta);
+  margin: 0;
+}
+
+.no-encontrado a {
+  color: var(--color-violeta);
+}

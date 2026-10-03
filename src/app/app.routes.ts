@@ -41,4 +41,9 @@ export const routes: Routes = [
     canMatch: [rolGuard(['admin', 'empleado'])],
     loadComponent: () => import('./componentes/empleado/empleado').then((m) => m.Empleado),
   },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./componentes/no-encontrado/no-encontrado').then((m) => m.NoEncontrado),
+  },
 ];

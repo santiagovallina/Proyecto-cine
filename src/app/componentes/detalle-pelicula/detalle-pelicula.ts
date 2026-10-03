@@ -4,6 +4,7 @@ import { Funcion } from '../../modelos/funcion';
 import { Pelicula } from '../../modelos/pelicula';
 import { Funciones } from '../../servicios/funciones';
 import { Peliculas } from '../../servicios/peliculas';
+import { Spinner } from '../spinner/spinner';
 
 function aTextoFecha(fecha: Date): string {
   const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -22,7 +23,7 @@ function proximosDias(cantidad: number): string[] {
 }
 
 @Component({
-  imports: [DatePipe],
+  imports: [DatePipe, Spinner],
   selector: 'app-detalle-pelicula',
   styleUrl: './detalle-pelicula.css',
   templateUrl: './detalle-pelicula.html',

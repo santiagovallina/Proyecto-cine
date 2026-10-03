@@ -31,11 +31,15 @@
     </div>
   </div>
 
-  <div class="cartelera__grilla">
-    @for (pelicula of peliculasFiltradas(); track pelicula.id) {
-      <app-tarjeta-pelicula [pelicula]="pelicula" />
-    } @empty {
-      <p class="cartelera__vacio">No se encontraron películas.</p>
-    }
-  </div>
+  @if (cargando()) {
+    <app-spinner />
+  } @else {
+    <div class="cartelera__grilla">
+      @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+        <app-tarjeta-pelicula [pelicula]="pelicula" />
+      } @empty {
+        <p class="cartelera__vacio">No se encontraron películas.</p>
+      }
+    </div>
+  }
 </section>

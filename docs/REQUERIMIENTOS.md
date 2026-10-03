@@ -150,7 +150,7 @@ Puntos, crédito, **"Mis películas"** (historial visual con calificación propi
 alertas de "Próximamente" activadas.
 
 ---
-
+// pasarlo
 ## 12. Requerimientos no funcionales
 
 | # | Requerimiento |

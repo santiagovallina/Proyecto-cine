@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { Pelicula } from '../../modelos/pelicula';
 import { Peliculas } from '../../servicios/peliculas';
+import { Spinner } from '../spinner/spinner';
 import { TarjetaPelicula } from '../tarjeta-pelicula/tarjeta-pelicula';
 
 function normalizar(texto: string): string {
@@ -12,7 +13,7 @@ function normalizar(texto: string): string {
 }
 
 @Component({
-  imports: [TarjetaPelicula, FormField],
+  imports: [TarjetaPelicula, FormField, Spinner],
   selector: 'app-cartelera',
   styleUrl: './cartelera.css',
   templateUrl: './cartelera.html',
@@ -21,6 +22,7 @@ export class Cartelera implements OnInit {
   private peliculasService = inject(Peliculas);
 
   peliculas = signal<Pelicula[]>([]);
+  cargando = signal(true);
 
   busquedaModel = signal({ texto: '' });
   busquedaForm = form(this.busquedaModel);
@@ -46,6 +48,7 @@ export class Cartelera implements OnInit {
 
   async ngOnInit() {
     this.peliculas.set(await this.peliculasService.getPeliculas());
+    this.cargando.set(false);
   }
 
   seleccionarGenero(nombre: string | null) {

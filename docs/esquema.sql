@@ -227,4 +227,112 @@ end;
 $$;
 
 
+-- =========================================================
+-- 5. BUTACAS EN TIEMPO REAL: butacas_estado
+-- =========================================================
+-- Las butacas en sí NO se guardan (el esquema está en Angular). Esta tabla guarda
+-- solo las que tienen algo especial:
+--   * 'bloqueada': alguien la está eligiendo (vence a los 5 minutos)
+--   * 'vendida':   ya se compró (la pasa a vendida la función de compra)
+-- Si una butaca no aparece acá para esa función, está LIBRE.
+
+create table butacas_estado (
+  funcion_id bigint not null references funciones(id) on delete cascade,
+  fila text not null check (fila ~ '^[A-IJL-T]$'),
+  numero integer not null check (numero between 1 and case when fila = 'J' then 14 else 28 end),
+  estado text not null check (estado in ('bloqueada', 'vendida')),
+  -- Hash (SHA-256) del id de sesión del navegador. La tabla es pública y se
+  -- transmite por Realtime, así que el id real NUNCA se guarda: con el hash
+  -- nadie puede liberar la butaca de otro.
+  sesion_hash text not null,
+  expira_en timestamptz,
+  -- Una butaca bloqueada siempre tiene vencimiento.
+  check (estado = 'vendida' or expira_en is not null),
+  -- La clave primaria es la que impide que dos personas tomen la misma butaca.
+  primary key (funcion_id, fila, numero)
+);
+
+alter table butacas_estado enable row level security;
+
+-- Lectura pública (no hay datos personales). NO hay policy de escritura:
+-- solo se modifica a través de las funciones de abajo.
+create policy "lectura publica" on butacas_estado for select using (true);
+
+-- Que Supabase transmita los cambios de esta tabla en tiempo real.
+alter publication supabase_realtime add table butacas_estado;
+
+-- Bloquea una butaca por 5 minutos. Si ya era tuya, renueva el tiempo.
+-- Devuelve cuándo vence el bloqueo.
+create or replace function public.bloquear_butaca(
+  p_funcion_id bigint,
+  p_fila text,
+  p_numero integer,
+  p_sesion uuid
+) returns timestamptz
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_hash text := encode(sha256(convert_to(p_sesion::text, 'UTF8')), 'hex');
+  v_expira timestamptz := now() + interval '5 minutes';
+begin
+  if not exists (
+    select 1 from funciones where id = p_funcion_id and activa and inicia_en > now()
+  ) then
+    raise exception 'La función no está disponible';
+  end if;
+
+  if (
+    select count(*) from butacas_estado
+    where funcion_id = p_funcion_id and sesion_hash = v_hash
+      and estado = 'bloqueada' and expira_en > now()
+  ) >= 8 then
+    raise exception 'Máximo 8 butacas por compra';
+  end if;
+
+  -- Un bloqueo vencido cuenta como libre: se borra antes de intentar tomarla.
+  delete from butacas_estado
+  where funcion_id = p_funcion_id and fila = p_fila and numero = p_numero
+    and estado = 'bloqueada' and expira_en <= now();
+
+  -- Si otra persona la tiene (o está vendida), el "where" impide el update
+  -- y no se afecta ninguna fila.
+  insert into butacas_estado (funcion_id, fila, numero, estado, sesion_hash, expira_en)
+  values (p_funcion_id, p_fila, p_numero, 'bloqueada', v_hash, v_expira)
+  on conflict (funcion_id, fila, numero) do update
+    set expira_en = excluded.expira_en
+    where butacas_estado.estado = 'bloqueada' and butacas_estado.sesion_hash = v_hash;
+
+  if not found then
+    raise exception 'Butaca no disponible';
+  end if;
+
+  return v_expira;
+end;
+$$;
+
+-- Libera una butaca, pero solo si la bloqueó esta misma sesión.
+create or replace function public.liberar_butaca(
+  p_funcion_id bigint,
+  p_fila text,
+  p_numero integer,
+  p_sesion uuid
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  delete from butacas_estado
+  where funcion_id = p_funcion_id and fila = p_fila and numero = p_numero
+    and estado = 'bloqueada'
+    and sesion_hash = encode(sha256(convert_to(p_sesion::text, 'UTF8')), 'hex');
+end;
+$$;
+
+grant execute on function public.bloquear_butaca(bigint, text, integer, uuid) to anon, authenticated;
+grant execute on function public.liberar_butaca(bigint, text, integer, uuid) to anon, authenticated;
+
+
 

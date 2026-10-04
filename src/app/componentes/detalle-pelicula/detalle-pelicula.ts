@@ -1,5 +1,6 @@
 import { Component, inject, Input, OnChanges, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Funcion } from '../../modelos/funcion';
 import { Pelicula } from '../../modelos/pelicula';
 import { Funciones } from '../../servicios/funciones';
@@ -23,7 +24,7 @@ function proximosDias(cantidad: number): string[] {
 }
 
 @Component({
-  imports: [DatePipe, Spinner],
+  imports: [DatePipe, RouterLink, Spinner],
   selector: 'app-detalle-pelicula',
   styleUrl: './detalle-pelicula.css',
   templateUrl: './detalle-pelicula.html',

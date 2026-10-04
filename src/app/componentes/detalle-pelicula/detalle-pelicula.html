@@ -51,12 +51,13 @@
       } @else {
         <div class="detalle__horarios">
           @for (funcion of funciones(); track funcion.id) {
-            <div class="detalle__horario">
+            <a class="detalle__horario" [routerLink]="['/funcion', funcion.id, 'butacas']">
               <span class="detalle__hora">{{ funcion.inicia_en | date: 'HH:mm' }}</span>
               <span class="detalle__dato">{{ funcion.formato }}</span>
               <span class="detalle__dato">{{ funcion.idioma }}</span>
               <span class="detalle__dato">{{ funcion.sala?.nombre }}</span>
-            </div>
+              <span class="detalle__ir">Elegir butacas →</span>
+            </a>
           } @empty {
             <p class="detalle__vacio">No hay funciones para este día.</p>
           }

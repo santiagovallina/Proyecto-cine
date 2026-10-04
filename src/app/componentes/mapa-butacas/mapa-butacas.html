@@ -1,0 +1,103 @@
+@if (cargando()) {
+  <app-spinner />
+} @else if (funcion(); as f) {
+  <section class="mapa">
+    <a class="mapa__volver" [routerLink]="['/pelicula', f.pelicula_id]">← Volver a la película</a>
+
+    <header class="mapa__cabecera">
+      <h1 class="mapa__titulo">{{ f.pelicula?.nombre }}</h1>
+      <p class="mapa__datos">
+        {{ f.inicia_en | date: 'EEEE d/M' }} · {{ f.inicia_en | date: 'HH:mm' }} ·
+        {{ f.formato }} · {{ f.idioma }} · {{ f.sala?.nombre }}
+      </p>
+      @if (f.pelicula && f.pelicula.restriccion_edad > 0) {
+        <p class="mapa__aviso-edad">
+          Película +{{ f.pelicula.restriccion_edad }}: si sos menor de
+          {{ f.pelicula.restriccion_edad }} años, tenés que ir acompañado de un adulto.
+        </p>
+      }
+    </header>
+
+    <div class="mapa__sala">
+      <div class="mapa__sala-interior">
+        <div class="mapa__pantalla" aria-hidden="true">
+          <span class="mapa__pantalla-texto">PANTALLA</span>
+        </div>
+
+        @for (fila of filas; track fila.letra) {
+          <div class="mapa__fila" [class.mapa__fila--accesible]="fila.tipo === 'accesible'">
+            <span class="mapa__letra">{{ fila.letra }}</span>
+            @for (grupo of fila.grupos; track $index) {
+              <div class="mapa__grupo">
+                @for (butaca of grupo; track butaca.numero) {
+                  @let estado = estadoDe(butaca);
+                  <button
+                    type="button"
+                    class="butaca"
+                    [class.butaca--accesible]="butaca.tipo === 'accesible'"
+                    [class.butaca--vip]="butaca.tipo === 'vip'"
+                    [class.butaca--elegida]="estado === 'elegida'"
+                    [class.butaca--bloqueada]="estado === 'bloqueada'"
+                    [class.butaca--vendida]="estado === 'vendida'"
+                    [disabled]="estado === 'bloqueada' || estado === 'vendida'"
+                    [attr.aria-pressed]="estado === 'elegida'"
+                    [attr.aria-label]="etiqueta(butaca, estado)"
+                    [title]="butaca.fila + butaca.numero"
+                    (click)="alternar(butaca)"
+                  ></button>
+                }
+              </div>
+            }
+            <span class="mapa__letra">{{ fila.letra }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <ul class="leyenda">
+      <li class="leyenda__item"><span class="butaca butaca--muestra"></span> Libre</li>
+      <li class="leyenda__item">
+        <span class="butaca butaca--muestra butaca--elegida"></span> Elegida
+      </li>
+      <li class="leyenda__item">
+        <span class="butaca butaca--muestra butaca--accesible"></span> Accesible
+      </li>
+      <li class="leyenda__item">
+        <span class="butaca butaca--muestra butaca--vip"></span> VIP (+50%)
+      </li>
+      <li class="leyenda__item">
+        <span class="butaca butaca--muestra butaca--bloqueada"></span> La está eligiendo otra persona
+      </li>
+      <li class="leyenda__item">
+        <span class="butaca butaca--muestra butaca--vendida"></span> Vendida
+      </li>
+    </ul>
+
+    <div class="resumen" aria-live="polite">
+      @if (seleccionadas().length === 0) {
+        <p class="resumen__vacio">Elegí tus butacas (hasta {{ maximo }}).</p>
+      } @else {
+        <p class="resumen__butacas">
+          Elegiste: <strong>{{ nombresSeleccionadas() }}</strong>
+        </p>
+        <p class="resumen__total">
+          Total: <strong>{{ total() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</strong>
+        </p>
+        <p class="resumen__tiempo">Tu reserva vence en {{ tiempoRestante() }}.</p>
+        @if (hayVip()) {
+          <p class="resumen__vip">
+            Incluye butacas VIP, que cuestan un 50% más que el precio base.
+          </p>
+        }
+      }
+      @if (aviso()) {
+        <p class="resumen__error">{{ aviso() }}</p>
+      }
+    </div>
+  </section>
+} @else {
+  <section class="mapa">
+    <p class="mapa__vacio">Esta función no existe o ya no está disponible.</p>
+    <a class="mapa__volver" routerLink="/cartelera">Volver a la cartelera</a>
+  </section>
+}

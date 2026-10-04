@@ -23,6 +23,18 @@ export class Funciones {
     return data as Funcion[];
   }
 
+  async getFuncion(id: number): Promise<Funcion | null> {
+    const { data, error } = await this.supabase
+      .from('funciones')
+      .select('*, sala:salas(id, nombre), pelicula:peliculas(*)')
+      .eq('id', id)
+      .eq('activa', true)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data as Funcion | null;
+  }
+
   async crearFuncion(datos: NuevaFuncion): Promise<Funcion> {
     const { data, error } = await this.supabase.rpc('crear_funcion', {
       p_pelicula_id: datos.pelicula_id,

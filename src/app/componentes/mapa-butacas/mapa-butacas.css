@@ -1,0 +1,224 @@
+:host {
+  --color-vip: #e0b84f;
+  --tam-butaca: 1.4rem;
+  --separacion: 0.25rem;
+  --pasillo: 1.5rem;
+}
+
+.mapa {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.mapa__volver {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--color-violeta);
+  text-decoration: none;
+}
+
+.mapa__volver:hover {
+  text-decoration: underline;
+}
+
+.mapa__titulo {
+  margin: 0 0 0.25rem;
+}
+
+.mapa__datos {
+  margin: 0;
+  color: var(--color-texto-muted);
+  text-transform: capitalize;
+}
+
+.mapa__aviso-edad {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+.mapa__vacio {
+  color: var(--color-texto-muted);
+}
+
+/* La sala se desplaza horizontalmente en pantallas chicas. */
+.mapa__sala {
+  margin: 2rem 0 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.mapa__sala-interior {
+  width: max-content;
+  margin: 0 auto;
+}
+
+/* Pantalla: una curva violeta con luz que se abre hacia las butacas. */
+.mapa__pantalla {
+  position: relative;
+  width: 80%;
+  height: 3rem;
+  margin: 0 auto 4rem;
+  border-top: 4px solid var(--color-violeta);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(to bottom, rgba(167, 139, 250, 0.35), transparent);
+  box-shadow: 0 -8px 30px rgba(167, 139, 250, 0.35);
+  text-align: center;
+}
+
+.mapa__pantalla::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 3rem;
+  background: linear-gradient(to bottom, rgba(167, 139, 250, 0.16), transparent);
+  clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.mapa__pantalla-texto {
+  position: absolute;
+  bottom: 0.4rem;
+  left: 0;
+  right: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.4em;
+  color: var(--color-texto-muted);
+}
+
+.mapa__fila {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pasillo);
+  margin-bottom: var(--separacion);
+}
+
+.mapa__fila--accesible {
+  margin-block: 0.75rem;
+}
+
+.mapa__grupo {
+  display: flex;
+  gap: var(--separacion);
+}
+
+.mapa__letra {
+  width: 1rem;
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--color-texto-muted);
+}
+
+.butaca {
+  width: var(--tam-butaca);
+  height: var(--tam-butaca);
+  padding: 0;
+  background: #3a3450;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px 6px 3px 3px;
+  cursor: pointer;
+}
+
+.butaca:not(:disabled):hover {
+  background: var(--color-violeta);
+}
+
+.butaca:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.butaca--accesible {
+  background: rgba(61, 214, 196, 0.35);
+  border-color: var(--color-accesible);
+}
+
+.butaca--vip {
+  background: rgba(224, 184, 79, 0.35);
+  border-color: var(--color-vip);
+}
+
+/* Otra persona la está eligiendo ahora: gris con borde punteado. */
+.butaca--bloqueada {
+  background: #26222f;
+  border: 1px dashed var(--color-texto-muted);
+  cursor: not-allowed;
+}
+
+/* Ya vendida: oscura y tachada. */
+.butaca--vendida {
+  background: repeating-linear-gradient(45deg, #2a2635, #2a2635 3px, #15121c 3px, #15121c 6px);
+  border-color: var(--color-borde);
+  cursor: not-allowed;
+}
+
+.butaca--elegida,
+.butaca--elegida:hover {
+  background: var(--color-violeta-cta);
+  border-color: #fff;
+}
+
+.butaca--muestra {
+  display: inline-block;
+  cursor: default;
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}
+
+.leyenda__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.resumen {
+  padding: 1rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+}
+
+.resumen p {
+  margin: 0 0 0.4rem;
+}
+
+.resumen p:last-child {
+  margin-bottom: 0;
+}
+
+.resumen__vacio {
+  color: var(--color-texto-muted);
+}
+
+.resumen__total {
+  font-size: 1.1rem;
+}
+
+.resumen__tiempo {
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}
+
+.resumen__vip {
+  font-size: 0.85rem;
+  color: var(--color-vip);
+}
+
+.resumen__error {
+  font-size: 0.85rem;
+  color: #fca5a5;
+}

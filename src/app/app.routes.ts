@@ -20,6 +20,11 @@ export const routes: Routes = [
       import('./componentes/detalle-pelicula/detalle-pelicula').then((m) => m.DetallePelicula),
   },
   {
+    path: 'funcion/:id/butacas',
+    loadComponent: () =>
+      import('./componentes/mapa-butacas/mapa-butacas').then((m) => m.MapaButacas),
+  },
+  {
     path: 'complejo',
     loadComponent: () => import('./componentes/complejo/complejo').then((m) => m.Complejo),
   },

@@ -1,3 +1,4 @@
+import { Pelicula } from './pelicula';
 import { Sala } from './sala';
 
 export type Formato = '2D' | '3D' | '4D' | '5D';
@@ -14,6 +15,7 @@ export interface Funcion {
   precio_base: number;
   activa: boolean;
   sala?: Sala;
+  pelicula?: Pelicula;
 }
 
 export interface NuevaFuncion {

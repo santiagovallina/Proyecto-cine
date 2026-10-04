@@ -188,8 +188,25 @@ un intervalo a una fecha no lo es. Se calcula una única vez, al insertar, dentr
 ### No existe una tabla de "butacas"
 Las 6 salas tienen siempre la misma distribución (20 filas, 3 columnas, fila
 accesible, filas VIP). Guardar cada butaca de cada sala sería una tabla de miles de
-filas idénticas. El mapa se calcula en el código a partir de reglas fijas; lo único
-que se va a guardar son las butacas **vendidas**.
+filas idénticas. El mapa se calcula en el código a partir de reglas fijas; en la base
+solo se guardan las butacas que tienen algo especial, en `butacas_estado`.
+
+### `butacas_estado` y selección en tiempo real
+Una butaca que **no** aparece en `butacas_estado` está libre; si aparece, está
+`bloqueada` (alguien la está eligiendo, vence a los 5 minutos) o `vendida`. No se
+guarda el estado "libre" porque obligaría a crear ~500 filas por cada función.
+
+- La **clave primaria** `(funcion_id, fila, numero)` impide que dos personas tomen la
+  misma butaca aunque hagan clic al mismo tiempo (igual que la exclusión de funciones).
+- La tabla solo se modifica con funciones SQL (`bloquear_butaca`, `liberar_butaca`),
+  que validan todo del lado del servidor (función vigente, máximo 8 butacas).
+- Como la tabla es pública y viaja por Realtime, no guarda el id de sesión sino su
+  **hash SHA-256**: cada navegador reconoce sus bloqueos, pero nadie puede liberar los
+  de otro.
+- **Supabase Realtime** (`postgres_changes`) avisa a todos los que miran el mapa
+  cuando una butaca cambia. Sin eso habría que recargar para ver lo que eligen otros.
+- Se puede elegir sin estar logueado (el requerimiento permite compra anónima), por
+  eso la sesión de bloqueo es un id aleatorio por pestaña (`sessionStorage`).
 
 ### Ruta con parámetro vía `@Input()`, no `ActivatedRoute`
 `provideRouter(routes, withComponentInputBinding())` permite que `/pelicula/:id`
@@ -227,10 +244,11 @@ permiso mientras la sesión todavía se está restaurando.
   (con margen de 30 minutos) garantizada en la base de datos.
 - Panel de admin (creación de funciones) y pantalla de detalle de película con
   selector de fecha y horarios disponibles.
+- Mapa de butacas (filas A-T, fila accesible, VIP +50%) con la pantalla dibujada,
+  selección y bloqueo en tiempo real entre usuarios (Supabase Realtime).
 - Deploy en Firebase Hosting, código en GitHub.
 
 ### En desarrollo
-- Mapa de butacas (filas A-T, accesibles, VIP) con selección.
 - Compra de entradas (simulada) con generación de PDF y código QR.
 - Validación de entradas por parte del empleado (código manual).
 - PWA (instalable, funcionamiento básico offline).

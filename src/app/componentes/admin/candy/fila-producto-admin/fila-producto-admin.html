@@ -1,0 +1,43 @@
+<div class="producto" [class.producto--oculto]="!disponible()">
+  <div class="producto__nombre">
+    <span>{{ producto.nombre }}</span>
+    @if (producto.descripcion) {
+      <span class="producto__descripcion">{{ producto.descripcion }}</span>
+    }
+  </div>
+
+  <label class="producto__campo">
+    Precio ($)
+    <input
+      class="adm__entrada"
+      type="number"
+      min="0"
+      step="100"
+      [value]="precio()"
+      (input)="cambiarPrecio($event)"
+    />
+  </label>
+
+  <label class="producto__disponible">
+    <input type="checkbox" [checked]="disponible()" (change)="cambiarDisponible($event)" />
+    Disponible
+  </label>
+
+  <div class="producto__accion">
+    <button
+      type="button"
+      class="adm__boton"
+      [disabled]="!hayCambios() || guardando()"
+      (click)="guardar()"
+    >
+      {{ guardando() ? 'Guardando...' : 'Guardar' }}
+    </button>
+    @if (mensaje() && !hayCambios()) {
+      <span class="adm__exito" role="status">{{ mensaje() }}</span>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="adm__error producto__error">{{ error() }}</p>
+  }
+</div>

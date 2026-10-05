@@ -1,78 +1,87 @@
-.panel {
-  padding: 1.5rem;
-}
-
-.crear-funcion {
-  max-width: 30rem;
-  margin-top: 1.5rem;
-}
-
-.crear-funcion__ayuda {
-  color: var(--color-texto-muted);
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-}
-
-.crear-funcion__form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.crear-funcion__fila {
+.admin {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: 15rem 1fr;
+  min-height: calc(100vh - 4.5rem);
 }
 
-.crear-funcion__campo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+.admin__menu {
+  padding: 1.5rem 1rem;
+  background: var(--color-superficie);
+  border-right: 1px solid var(--color-borde);
 }
 
-.crear-funcion__campo label {
-  font-size: 0.9rem;
+.admin__titulo {
+  margin: 0 0 1rem;
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-texto-muted);
 }
 
-.crear-funcion__campo input,
-.crear-funcion__campo select {
-  padding: 0.6rem 0.8rem;
-  font: inherit;
+.admin__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin__link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.75rem;
   color: var(--color-texto);
-  background: var(--color-superficie);
-  border: 1px solid var(--color-borde);
+  text-decoration: none;
   border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
 }
 
-.crear-funcion__exito {
-  color: #4ade80;
-  font-size: 0.9rem;
+.admin__link:hover {
+  background: var(--color-borde);
 }
 
-.crear-funcion__error {
-  color: #f87171;
-  font-size: 0.9rem;
-}
-
-.crear-funcion button[type='submit'] {
-  padding: 0.7rem 1rem;
-  font: inherit;
-  font-weight: 600;
+.admin__link--activo {
   color: #fff;
   background: var(--color-violeta-cta);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
-.crear-funcion button[type='submit']:disabled {
-  opacity: 0.5;
+.admin__link--activo:hover {
+  background: var(--color-violeta-cta);
 }
 
-.crear-funcion__lista {
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
-  color: var(--color-texto-muted);
+.admin__contenido {
+  min-width: 0;
+  padding: 1.5rem 2rem;
+}
+
+/* En el celular la barra pasa arriba, con las opciones en fila. */
+@media (max-width: 768px) {
+  .admin {
+    grid-template-columns: 1fr;
+  }
+
+  .admin__menu {
+    padding: 0.75rem 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--color-borde);
+  }
+
+  .admin__titulo {
+    display: none;
+  }
+
+  .admin__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .admin__link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .admin__contenido {
+    padding: 1rem;
+  }
 }

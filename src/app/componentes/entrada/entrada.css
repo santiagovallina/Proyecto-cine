@@ -8,6 +8,51 @@
   margin: 0 0 1rem;
 }
 
+.entrada__ticket {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-violeta);
+  border-radius: 12px;
+}
+
+/* Fondo blanco siempre: el lector de QR necesita contraste. */
+.entrada__qr {
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.entrada__pdf {
+  padding: 0.6rem 1.2rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-violeta-cta);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.entrada__pdf:hover {
+  filter: brightness(1.15);
+}
+
+.entrada__pdf:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .entrada__ticket {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
 .entrada__codigo-etiqueta {
   margin: 0;
   font-size: 0.85rem;

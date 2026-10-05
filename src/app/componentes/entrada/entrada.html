@@ -3,11 +3,34 @@
 } @else if (compra(); as c) {
   <section class="entrada">
     <h1 class="entrada__titulo">¡Compra confirmada!</h1>
-    <p class="entrada__codigo-etiqueta">Tu código</p>
-    <p class="entrada__codigo">{{ c.codigo }}</p>
-    <p class="entrada__nota">
-      Presentalo en el cine. Guardalo: con este código podés volver a ver tu entrada.
-    </p>
+
+    <div class="entrada__ticket">
+      @if (qr()) {
+        <img
+          class="entrada__qr"
+          [src]="qr()"
+          alt="Código QR de tu entrada"
+          width="180"
+          height="180"
+        />
+      }
+      <div class="entrada__codigo-bloque">
+        <p class="entrada__codigo-etiqueta">Tu código</p>
+        <p class="entrada__codigo">{{ c.codigo }}</p>
+        <p class="entrada__nota">
+          Presentá el QR (o el código) en el cine. Guardalo: con el código podés volver a ver tu
+          entrada.
+        </p>
+        <button
+          type="button"
+          class="entrada__pdf"
+          [disabled]="generandoPdf() || !qr()"
+          (click)="descargarPdf()"
+        >
+          {{ generandoPdf() ? 'Generando...' : 'Descargar PDF' }}
+        </button>
+      </div>
+    </div>
 
     @if (c.entradas.length > 0) {
       <div class="entrada__bloque">

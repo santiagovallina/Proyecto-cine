@@ -1,0 +1,114 @@
+<section class="adm">
+  <h1 class="adm__titulo">Funciones</h1>
+  <p class="adm__ayuda">Creá funciones nuevas o editá las que ya existen.</p>
+
+  <div class="adm__tarjeta">
+    <h2>Agregar función</h2>
+    <p class="adm__ayuda">La sala se asigna sola, según cuál esté libre a esa hora.</p>
+
+    <form class="adm__form" (submit)="enviar($event)" novalidate>
+      <div class="adm__fila">
+        <div class="adm__campo">
+          <label for="pelicula">Película</label>
+          <select id="pelicula" [formField]="funcionForm.pelicula_id">
+            <option value="">Elegí una opción</option>
+            @for (pelicula of peliculas(); track pelicula.id) {
+              <option [value]="pelicula.id.toString()">{{ pelicula.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div class="adm__campo">
+          <label for="fecha">Fecha</label>
+          <input id="fecha" type="date" [formField]="funcionForm.fecha" />
+        </div>
+        <div class="adm__campo">
+          <label for="hora">Hora</label>
+          <input id="hora" type="time" [formField]="funcionForm.hora" />
+        </div>
+      </div>
+
+      <div class="adm__fila">
+        <div class="adm__campo">
+          <label for="formato">Formato</label>
+          <select id="formato" [formField]="funcionForm.formato">
+            <option value="">Elegí una opción</option>
+            @for (formato of formatos; track formato) {
+              <option [value]="formato">{{ formato }}</option>
+            }
+          </select>
+        </div>
+        <div class="adm__campo">
+          <label for="idioma">Idioma</label>
+          <select id="idioma" [formField]="funcionForm.idioma">
+            <option value="">Elegí una opción</option>
+            @for (idioma of idiomas; track idioma) {
+              <option [value]="idioma">{{ idioma }}</option>
+            }
+          </select>
+        </div>
+        <div class="adm__campo">
+          <label for="precio">Precio base</label>
+          <input id="precio" type="number" [formField]="funcionForm.precio_base" />
+        </div>
+      </div>
+
+      @if (funcionForm().touched() && funcionForm().invalid()) {
+        <p class="adm__error">Completá todos los campos para crear la función.</p>
+      }
+      @if (mensaje()) {
+        <p class="adm__exito">{{ mensaje() }}</p>
+      }
+      @if (error()) {
+        <p class="adm__error">{{ error() }}</p>
+      }
+
+      <div>
+        <button class="adm__boton" type="submit" [disabled]="funcionForm().submitting()">
+          {{ funcionForm().submitting() ? 'Creando...' : 'Crear función' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="adm__tarjeta">
+    <h2>Editar funciones</h2>
+    <p class="adm__ayuda">
+      Elegí una película y un día. Si una función ya tiene entradas vendidas, solo se puede
+      cambiar el precio.
+    </p>
+
+    <div class="adm__fila adm__fila--filtros">
+      <div class="adm__campo">
+        <label for="filtro-pelicula">Película</label>
+        <select
+          id="filtro-pelicula"
+          [value]="peliculaFiltro()"
+          (change)="cambiarPelicula($event)"
+        >
+          <option value="">Elegí una película</option>
+          @for (pelicula of peliculas(); track pelicula.id) {
+            <option [value]="pelicula.id.toString()">{{ pelicula.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="adm__campo">
+        <label for="filtro-fecha">Día</label>
+        <input id="filtro-fecha" type="date" [value]="fechaFiltro()" (change)="cambiarFecha($event)" />
+      </div>
+    </div>
+
+    @if (cargandoLista()) {
+      <app-spinner />
+    } @else if (errorLista()) {
+      <p class="adm__error">{{ errorLista() }}</p>
+    } @else if (!peliculaFiltro()) {
+      <p class="adm__vacio">Elegí una película para ver sus funciones.</p>
+    } @else {
+      @for (funcion of funcionesDelDia(); track funcion.id) {
+        <app-fila-funcion-admin [funcion]="funcion" />
+      } @empty {
+        <p class="adm__vacio">No hay funciones ese día para esa película.</p>
+      }
+    }
+  </div>
+</section>

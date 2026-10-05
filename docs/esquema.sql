@@ -148,9 +148,11 @@ create table funciones (
   sala_id bigint not null references salas(id),
   inicia_en timestamptz not null,
   termina_en timestamptz not null,
-  -- inicia_en/termina_en estirados 30 min para cada lado. Se calcula UNA VEZ
-  -- al insertar (en crear_funcion), porque Postgres no deja usar funciones
-  -- "no immutable" (como restar un intervalo a una fecha) dentro de un índice.
+  -- Desde que empieza hasta 30 min después de que termina (recambio de sala).
+  -- El rango es cerrado a la izquierda y abierto a la derecha, así que la
+  -- siguiente función puede empezar justo cuando se cumplen los 30 min.
+  -- Se calcula UNA VEZ al insertar (en crear_funcion), porque Postgres no deja usar
+  -- funciones "no immutable" (como sumar un intervalo a una fecha) dentro de un índice.
   margen tstzrange not null,
   formato text not null check (formato in ('2D', '3D', '4D', '5D')),
   idioma text not null check (idioma in ('Castellano', 'Subtitulada')),
@@ -209,7 +211,7 @@ begin
         v_sala.id,
         p_inicia_en,
         v_termina_en,
-        tstzrange(p_inicia_en - interval '30 minutes', v_termina_en + interval '30 minutes'),
+        tstzrange(p_inicia_en, v_termina_en + interval '30 minutes'),
         p_formato,
         p_idioma,
         p_precio_base
@@ -575,6 +577,225 @@ $$;
 
 grant execute on function public.comprar(bigint, jsonb, jsonb, text, uuid) to anon, authenticated;
 grant execute on function public.obtener_entrada(text) to anon, authenticated;
+
+
+-- =========================================================
+-- 7. VALIDACIÓN DEL EMPLEADO: marcar entradas y candy como usados
+-- =========================================================
+-- El QR es solo el código: lo que lo hace "de un solo uso" es esta marca en la base.
+-- Solo pueden usarlas empleados y admins. El "update ... where not usada" es atómico:
+-- si dos empleados validan a la vez, solo uno logra marcarla y el otro recibe el error.
+
+create or replace function public.validar_entrada(p_codigo text)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_compra_id bigint;
+  v_cantidad integer;
+begin
+  if not exists (
+    select 1 from perfiles where id = auth.uid() and rol in ('empleado', 'admin')
+  ) then
+    raise exception 'No autorizado';
+  end if;
+
+  select id into v_compra_id from compras where codigo = upper(trim(p_codigo));
+  if v_compra_id is null then
+    raise exception 'No existe una compra con ese código';
+  end if;
+
+  if not exists (select 1 from entradas where compra_id = v_compra_id) then
+    raise exception 'Esta compra no tiene entradas';
+  end if;
+
+  update entradas set usada = true where compra_id = v_compra_id and not usada;
+  get diagnostics v_cantidad = row_count;
+
+  if v_cantidad = 0 then
+    raise exception 'Las entradas de esta compra ya fueron utilizadas';
+  end if;
+
+  return v_cantidad;
+end;
+$$;
+
+create or replace function public.entregar_candy(p_codigo text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_compra_id bigint;
+  v_cantidad integer;
+begin
+  if not exists (
+    select 1 from perfiles where id = auth.uid() and rol in ('empleado', 'admin')
+  ) then
+    raise exception 'No autorizado';
+  end if;
+
+  select id into v_compra_id from compras where codigo = upper(trim(p_codigo));
+  if v_compra_id is null then
+    raise exception 'No existe una compra con ese código';
+  end if;
+
+  if not exists (select 1 from items_candy where compra_id = v_compra_id) then
+    raise exception 'Esta compra no incluye candy';
+  end if;
+
+  update compras set candy_retirado = true where id = v_compra_id and not candy_retirado;
+  get diagnostics v_cantidad = row_count;
+
+  if v_cantidad = 0 then
+    raise exception 'El candy de esta compra ya fue retirado';
+  end if;
+end;
+$$;
+
+grant execute on function public.validar_entrada(text) to authenticated;
+grant execute on function public.entregar_candy(text) to authenticated;
+
+
+-- =========================================================
+-- 8. PANEL DE ADMIN: roles, precios del candy y edición de funciones
+-- =========================================================
+-- Todas las operaciones del panel son funciones SQL que comprueban que quien llama
+-- sea admin. Así la seguridad no depende de que el panel esté escondido en Angular.
+
+create or replace function public.es_admin()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (select 1 from perfiles where id = auth.uid() and rol = 'admin');
+$$;
+
+-- Lista solo el personal (empleados y admins), no todos los usuarios: es lo único que el
+-- panel necesita mostrar. El email vive en auth.users, que el cliente no puede leer.
+create or replace function public.listar_personal()
+returns table (id uuid, email text, nombre text, apellido text, rol text)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  return query
+  select u.id, u.email::text, p.nombre, p.apellido, p.rol
+  from auth.users u
+  join perfiles p on p.id = u.id
+  where p.rol in ('empleado', 'admin')
+  order by p.rol, u.email;
+end;
+$$;
+
+-- Da el rol 'cliente', 'empleado' o 'admin' al usuario con ese email.
+create or replace function public.cambiar_rol(p_email text, p_rol text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  if p_rol not in ('cliente', 'empleado', 'admin') then
+    raise exception 'Rol inválido';
+  end if;
+
+  select u.id into v_id from auth.users u where lower(u.email) = lower(trim(p_email));
+  if v_id is null then
+    raise exception 'No existe un usuario con ese email';
+  end if;
+
+  -- Evita que el único admin se saque el permiso por error y se quede sin acceso.
+  if v_id = auth.uid() then
+    raise exception 'No podés cambiar tu propio rol';
+  end if;
+
+  update perfiles set rol = p_rol where id = v_id;
+end;
+$$;
+
+create or replace function public.actualizar_producto_candy(
+  p_id bigint,
+  p_precio numeric,
+  p_disponible boolean
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  if p_precio is null or p_precio < 0 then
+    raise exception 'Precio inválido';
+  end if;
+
+  update productos_candy set precio = p_precio, disponible = p_disponible where id = p_id;
+  if not found then
+    raise exception 'Producto no encontrado';
+  end if;
+end;
+$$;
+
+-- Edita una función ya creada. Si ya se vendieron entradas, solo se puede cambiar el
+-- precio (el de las entradas vendidas no cambia: cada una guarda su propio precio).
+create or replace function public.actualizar_funcion(
+  p_id bigint,
+  p_formato text,
+  p_idioma text,
+  p_precio numeric,
+  p_activa boolean
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_funcion funciones;
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  select * into v_funcion from funciones where id = p_id;
+  if not found then
+    raise exception 'Función no encontrada';
+  end if;
+
+  if exists (select 1 from entradas where funcion_id = p_id)
+     and (p_formato <> v_funcion.formato or p_idioma <> v_funcion.idioma or not p_activa) then
+    raise exception 'Ya hay entradas vendidas: solo se puede cambiar el precio';
+  end if;
+
+  update funciones
+  set formato = p_formato, idioma = p_idioma, precio_base = p_precio, activa = p_activa
+  where id = p_id;
+end;
+$$;
+
+grant execute on function public.es_admin() to authenticated;
+grant execute on function public.listar_personal() to authenticated;
+grant execute on function public.cambiar_rol(text, text) to authenticated;
+grant execute on function public.actualizar_producto_candy(bigint, numeric, boolean) to authenticated;
+grant execute on function public.actualizar_funcion(bigint, text, text, numeric, boolean) to authenticated;
 
 
 

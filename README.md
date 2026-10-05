@@ -181,9 +181,13 @@ Es la garantía más fuerte posible: Postgres **rechaza** directamente cualquier
 intente. Una validación solo en Angular podría evitarse llamando a la API directo.
 
 `margen` es una columna separada (no calculada dentro de la restricción) porque
-Postgres exige que las expresiones usadas en un índice sean *immutable*, y restarle
+Postgres exige que las expresiones usadas en un índice sean *immutable*, y sumarle
 un intervalo a una fecha no lo es. Se calcula una única vez, al insertar, dentro de
 `crear_funcion`.
+
+El margen va **desde que empieza la función hasta 30 minutos después de que termina**.
+El rango es cerrado a la izquierda y abierto a la derecha, por lo que la siguiente
+función puede empezar justo cuando se cumplen los 30 minutos, pero no antes.
 
 ### No existe una tabla de "butacas"
 Las 6 salas tienen siempre la misma distribución (20 filas, 3 columnas, fila
@@ -222,8 +226,8 @@ más simple, consistente con el `@Input()` que ya se usa entre componentes padre
 |---|---|
 | Anónimo | Ver cartelera, candy, complejo, comprar sin registrarse |
 | `cliente` | Todo lo anterior + su perfil, historial (a futuro) |
-| `admin` | Todo + crear funciones, gestión completa (`/admin`) |
-| `empleado` | Validar entradas (`/empleado`) |
+| `admin` | Todo + panel de administración (`/admin`): funciones, roles de usuarios y precios del candy |
+| `empleado` | Validar entradas y entregar candy por código (`/empleado`) |
 
 El rol se determina en `perfiles.rol`, protegido por RLS (nadie puede modificarlo
 desde el cliente) y por Guards de Angular (`rolGuard`) que protegen `/admin` y
@@ -242,16 +246,22 @@ permiso mientras la sesión todavía se está restaurando.
 - Guards por rol para `/admin` y `/empleado`.
 - Salas y funciones, con asignación automática de sala y regla de no solapamiento
   (con margen de 30 minutos) garantizada en la base de datos.
-- Panel de admin (creación de funciones) y pantalla de detalle de película con
-  selector de fecha y horarios disponibles.
+- Pantalla de detalle de película con selector de fecha y horarios disponibles.
 - Mapa de butacas (filas A-T, fila accesible, VIP +50%) con la pantalla dibujada,
   selección y bloqueo en tiempo real entre usuarios (Supabase Realtime).
+- Carrito de candy y checkout con pago simulado, compra anónima o registrada, email
+  obligatorio y aviso de edad. Entrada con código y QR (`qrcode`) y PDF descargable (`jspdf`).
+- Panel de empleado: validación de entradas y entrega de candy por código; cada código
+  se puede usar una sola vez (lo garantiza la base de datos).
+- Panel de admin (dashboard con rutas hijas): crear y editar funciones, asignar roles
+  por email y editar los precios del candy. Todas las acciones son funciones SQL que
+  verifican que quien llama sea admin.
+- PWA con `@angular/pwa`: se puede instalar en el celular o la computadora (manifest con
+  nombre, colores e íconos del cine) y un service worker guarda la aplicación para que abra
+  sin conexión, además de las últimas películas y productos del candy vistos. Las compras,
+  las butacas y el panel necesitan conexión (los datos en vivo no se guardan en caché).
+  El service worker solo funciona en el build de producción, no con `ng serve`.
 - Deploy en Firebase Hosting, código en GitHub.
-
-### En desarrollo
-- Compra de entradas (simulada) con generación de PDF y código QR.
-- Validación de entradas por parte del empleado (código manual).
-- PWA (instalable, funcionamiento básico offline).
 
 ### Trabajo futuro 
 Reseñas y puntaje promedio, programa de puntos y recompensas, cupones configurables,

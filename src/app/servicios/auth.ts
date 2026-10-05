@@ -55,6 +55,15 @@ export class Auth {
     return (data as { rol: Rol } | null)?.rol ?? null;
   }
 
+  /**
+   * Rol del usuario con sesión, leído siempre de la base. Lo usan los Guards: así no dependen
+   * de si el perfil global ya terminó de cargarse ni de un perfil viejo en memoria.
+   */
+  async rolActual(): Promise<Rol | null> {
+    const usuario = this.usuario();
+    return usuario ? this.obtenerRol(usuario.id) : null;
+  }
+
   registrar(datos: RegistroData) {
     return this.supabase.auth.signUp({
       email: datos.email,

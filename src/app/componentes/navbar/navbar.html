@@ -25,6 +25,12 @@
         @if (!auth.cargando()) {
           @if (auth.logueado()) {
             <p class="navbar__saludo">Hola, {{ auth.perfil()?.nombre || 'usuario' }}</p>
+            @if (auth.rol() === 'admin') {
+              <a routerLink="/admin" (click)="cerrarMenu()">Panel de admin</a>
+            }
+            @if (auth.rol() === 'admin' || auth.rol() === 'empleado') {
+              <a routerLink="/empleado" (click)="cerrarMenu()">Validar entradas</a>
+            }
             <button type="button" class="navbar__opcion" (click)="cerrarSesion()">Cerrar sesión</button>
           } @else {
             <a routerLink="/login" (click)="cerrarMenu()">Iniciar sesión</a>

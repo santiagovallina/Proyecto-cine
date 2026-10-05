@@ -45,9 +45,28 @@ export const routes: Routes = [
     loadComponent: () => import('./componentes/register/register').then((m) => m.Register),
   },
   {
+    // El guard del padre protege también todas las rutas hijas.
     path: 'admin',
     canMatch: [rolGuard(['admin'])],
     loadComponent: () => import('./componentes/admin/admin').then((m) => m.Admin),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'funciones' },
+      {
+        path: 'funciones',
+        loadComponent: () =>
+          import('./componentes/admin/funciones/admin-funciones').then((m) => m.AdminFunciones),
+      },
+      {
+        path: 'roles',
+        loadComponent: () =>
+          import('./componentes/admin/roles/admin-roles').then((m) => m.AdminRoles),
+      },
+      {
+        path: 'candy',
+        loadComponent: () =>
+          import('./componentes/admin/candy/admin-candy').then((m) => m.AdminCandy),
+      },
+    ],
   },
   {
     path: 'empleado',

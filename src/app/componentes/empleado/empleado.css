@@ -1,3 +1,187 @@
-.panel {
-  padding: 1.5rem;
+.empleado {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.empleado__titulo {
+  margin: 0 0 0.5rem;
+}
+
+.empleado__ayuda {
+  margin: 0 0 1.5rem;
+  color: var(--color-texto-muted);
+}
+
+.empleado__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.empleado__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.empleado__campo label {
+  font-size: 0.9rem;
+  color: var(--color-texto-muted);
+}
+
+.empleado__campo input {
+  padding: 0.8rem 0.9rem;
+  font: inherit;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.empleado__campo input:focus {
+  border-color: var(--color-violeta);
+}
+
+.empleado__error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #f87171;
+}
+
+.empleado__boton,
+.empleado__accion {
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-violeta-cta);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.empleado__boton:hover,
+.empleado__accion:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.empleado__boton:disabled,
+.empleado__accion:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.empleado__mensaje {
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.empleado__mensaje--ok {
+  color: #86efac;
+  border-color: #22c55e;
+}
+
+.empleado__mensaje--error {
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+.empleado__codigo {
+  margin: 0 0 1rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-violeta);
+}
+
+.empleado__bloque {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+}
+
+.empleado__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.empleado__encabezado h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.empleado__estado {
+  padding: 0.2rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.empleado__estado--vigente {
+  color: #86efac;
+  border-color: #22c55e;
+}
+
+.empleado__estado--usada {
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+.empleado__pelicula {
+  margin: 0;
+  font-weight: 700;
+}
+
+.empleado__dato {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-texto-muted);
+  text-transform: capitalize;
+}
+
+.empleado__lista {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.empleado__linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.empleado__marca {
+  font-size: 0.85rem;
+  color: #86efac;
+}
+
+.empleado__marca--usada {
+  color: var(--color-texto-muted);
+}
+
+.empleado__aviso {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+.empleado__accion {
+  width: 100%;
 }

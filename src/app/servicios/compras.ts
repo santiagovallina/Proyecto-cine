@@ -29,4 +29,16 @@ export class Compras {
     if (error) throw error;
     return data as CompraCompleta | null;
   }
+
+  // Marcan la entrada o el candy como usados. Solo funcionan para empleados y admins
+  // (lo comprueba SQL) y fallan si ya se usaron: por eso el QR sirve una sola vez.
+  async validarEntrada(codigo: string): Promise<void> {
+    const { error } = await this.supabase.rpc('validar_entrada', { p_codigo: codigo });
+    if (error) throw error;
+  }
+
+  async entregarCandy(codigo: string): Promise<void> {
+    const { error } = await this.supabase.rpc('entregar_candy', { p_codigo: codigo });
+    if (error) throw error;
+  }
 }

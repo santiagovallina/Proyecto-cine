@@ -1,0 +1,24 @@
+<section class="adm">
+  <h1 class="adm__titulo">Precios del candy</h1>
+  <p class="adm__ayuda">
+    Cambiá el precio de cada producto o sacalo de la venta. Las compras ya hechas conservan el
+    precio al que se pagaron.
+  </p>
+
+  @if (cargando()) {
+    <app-spinner />
+  } @else if (error()) {
+    <p class="adm__error">{{ error() }}</p>
+  } @else {
+    @for (categoria of categorias; track categoria) {
+      @if (productosDe(categoria).length > 0) {
+        <div class="adm__tarjeta">
+          <h2>{{ categoria }}</h2>
+          @for (producto of productosDe(categoria); track producto.id) {
+            <app-fila-producto-admin [producto]="producto" />
+          }
+        </div>
+      }
+    }
+  }
+</section>

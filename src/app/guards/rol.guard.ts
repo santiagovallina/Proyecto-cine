@@ -14,7 +14,12 @@ export function rolGuard(rolesPermitidos: Rol[]): CanMatchFn {
       return router.createUrlTree(['/login']);
     }
 
-    if (rolesPermitidos.includes(auth.rol() as Rol)) {
+    // Se pregunta el rol a la base en vez de leer auth.rol(): justo después de un login ese
+    // signal puede seguir vacío (el perfil se carga en segundo plano) y el Guard rechazaría
+    // por error a un empleado o admin legítimo.
+    const rol = await auth.rolActual();
+
+    if (rol !== null && rolesPermitidos.includes(rol)) {
       return true;
     }
 

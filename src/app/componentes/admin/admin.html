@@ -1,77 +1,21 @@
-<section class="panel">
-  <h1>Panel de administración</h1>
+<div class="admin">
+  <aside class="admin__menu">
+    <p class="admin__titulo">Administración</p>
 
-  <section class="crear-funcion">
-    <h2>Crear función</h2>
-    <p class="crear-funcion__ayuda">La sala se asigna sola, según qué esté libre a esa hora.</p>
+    <nav class="admin__nav" aria-label="Secciones del panel">
+      <a class="admin__link" routerLink="funciones" routerLinkActive="admin__link--activo">
+        <span aria-hidden="true">🎬</span> Funciones
+      </a>
+      <a class="admin__link" routerLink="roles" routerLinkActive="admin__link--activo">
+        <span aria-hidden="true">👥</span> Roles de usuarios
+      </a>
+      <a class="admin__link" routerLink="candy" routerLinkActive="admin__link--activo">
+        <span aria-hidden="true">🍿</span> Precios del candy
+      </a>
+    </nav>
+  </aside>
 
-    <form class="crear-funcion__form" (submit)="enviar($event)" novalidate>
-      <div class="crear-funcion__campo">
-        <label for="pelicula">Película</label>
-        <select id="pelicula" [formField]="funcionForm.pelicula_id">
-          <option value="">Elegí una opción</option>
-          @for (pelicula of peliculas(); track pelicula.id) {
-            <option [value]="pelicula.id.toString()">{{ pelicula.nombre }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="crear-funcion__fila">
-        <div class="crear-funcion__campo">
-          <label for="fecha">Fecha</label>
-          <input id="fecha" type="date" [formField]="funcionForm.fecha" />
-        </div>
-        <div class="crear-funcion__campo">
-          <label for="hora">Hora</label>
-          <input id="hora" type="time" [formField]="funcionForm.hora" />
-        </div>
-      </div>
-
-      <div class="crear-funcion__fila">
-        <div class="crear-funcion__campo">
-          <label for="formato">Formato</label>
-          <select id="formato" [formField]="funcionForm.formato">
-            <option value="">Elegí una opción</option>
-            @for (formato of formatos; track formato) {
-              <option [value]="formato">{{ formato }}</option>
-            }
-          </select>
-        </div>
-        <div class="crear-funcion__campo">
-          <label for="idioma">Idioma</label>
-          <select id="idioma" [formField]="funcionForm.idioma">
-            <option value="">Elegí una opción</option>
-            @for (idioma of idiomas; track idioma) {
-              <option [value]="idioma">{{ idioma }}</option>
-            }
-          </select>
-        </div>
-      </div>
-
-      <div class="crear-funcion__campo">
-        <label for="precio">Precio</label>
-        <input id="precio" type="number" [formField]="funcionForm.precio_base" />
-      </div>
-
-      @if (mensaje()) {
-        <p class="crear-funcion__exito">{{ mensaje() }}</p>
-      }
-      @if (error()) {
-        <p class="crear-funcion__error">{{ error() }}</p>
-      }
-
-      <button type="submit" [disabled]="funcionForm().submitting()">
-        {{ funcionForm().submitting() ? 'Creando...' : 'Crear función' }}
-      </button>
-    </form>
-
-    @if (ultimasFunciones().length > 0) {
-      <div class="crear-funcion__lista">
-        <h3>Recién creadas</h3>
-        @for (item of ultimasFunciones(); track item.inicia_en) {
-          <p>{{ item.inicia_en | date: 'short' }} — {{ item.sala }}</p>
-        }
-      </div>
-    }
-  </section>
-</section>
+  <main class="admin__contenido">
+    <router-outlet />
+  </main>
+</div>

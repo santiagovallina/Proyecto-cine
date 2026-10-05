@@ -1,0 +1,80 @@
+.personal {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.personal__fila {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.personal__datos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.personal__email {
+  overflow-wrap: anywhere;
+}
+
+.personal__nombre {
+  font-size: 0.8rem;
+  color: var(--color-texto-muted);
+}
+
+.personal__rol {
+  flex-shrink: 0;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-texto-muted);
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+}
+
+.personal__rol--admin {
+  color: var(--color-violeta);
+  border-color: var(--color-violeta);
+}
+
+.personal__rol--empleado {
+  color: var(--color-accesible);
+  border-color: var(--color-accesible);
+}
+
+.personal__yo {
+  flex-shrink: 0;
+  width: 5.5rem;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--color-texto-muted);
+}
+
+.personal__quitar {
+  flex-shrink: 0;
+  width: 5.5rem;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #fca5a5;
+  background: none;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.personal__quitar:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+@media (max-width: 640px) {
+  .personal__fila {
+    flex-wrap: wrap;
+  }
+}

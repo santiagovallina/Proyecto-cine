@@ -1,0 +1,60 @@
+:host {
+  display: block;
+}
+
+.producto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.producto--oculto {
+  opacity: 0.6;
+}
+
+.producto__nombre {
+  display: flex;
+  flex: 1 1 12rem;
+  flex-direction: column;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.producto__descripcion {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-texto-muted);
+}
+
+.producto__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--color-texto-muted);
+}
+
+.producto__campo input {
+  width: 8rem;
+}
+
+.producto__disponible {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.producto__accion {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.producto__error {
+  flex-basis: 100%;
+}

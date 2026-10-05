@@ -1,0 +1,84 @@
+<section class="adm">
+  <h1 class="adm__titulo">Roles de usuarios</h1>
+  <p class="adm__ayuda">
+    Dale a un usuario el rol de empleado o administrador. La persona tiene que estar registrada.
+  </p>
+
+  <div class="adm__tarjeta">
+    <h2>Asignar rol</h2>
+
+    <form class="adm__form" (submit)="enviar($event)" novalidate>
+      <div class="adm__fila">
+        <div class="adm__campo">
+          <label for="email">Email del usuario</label>
+          <input id="email" type="email" autocomplete="off" [formField]="cambioForm.email" />
+          @if (cambioForm.email().touched()) {
+            @for (error of cambioForm.email().errors(); track error.kind) {
+              <p class="adm__error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="adm__campo">
+          <label for="rol">Rol</label>
+          <select id="rol" [formField]="cambioForm.rol">
+            @for (rol of roles; track rol.valor) {
+              <option [value]="rol.valor">{{ rol.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (mensaje()) {
+        <p class="adm__exito">{{ mensaje() }}</p>
+      }
+      @if (error()) {
+        <p class="adm__error">{{ error() }}</p>
+      }
+
+      <div>
+        <button class="adm__boton" type="submit" [disabled]="cambioForm().submitting()">
+          {{ cambioForm().submitting() ? 'Guardando...' : 'Asignar rol' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="adm__tarjeta">
+    <h2>Personal actual</h2>
+    <p class="adm__ayuda">Empleados y administradores.</p>
+
+    @if (cargando()) {
+      <app-spinner />
+    } @else {
+      <ul class="personal">
+        @for (usuario of personal(); track usuario.id) {
+          <li class="personal__fila">
+            <span class="personal__datos">
+              <span class="personal__email">{{ usuario.email }}</span>
+              <span class="personal__nombre">{{ usuario.nombre }} {{ usuario.apellido }}</span>
+            </span>
+
+            <span
+              class="personal__rol"
+              [class.personal__rol--admin]="usuario.rol === 'admin'"
+              [class.personal__rol--empleado]="usuario.rol === 'empleado'"
+            >
+              {{ usuario.rol }}
+            </span>
+
+            @if (usuario.id === auth.usuario()?.id) {
+              <span class="personal__yo">(vos)</span>
+            } @else {
+              <button type="button" class="personal__quitar" (click)="quitarRol(usuario)">
+                Quitar rol
+              </button>
+            }
+          </li>
+        } @empty {
+          <li class="adm__vacio">Todavía no hay personal.</li>
+        }
+      </ul>
+    }
+  </div>
+</section>

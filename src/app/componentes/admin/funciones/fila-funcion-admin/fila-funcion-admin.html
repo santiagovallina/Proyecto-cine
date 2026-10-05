@@ -1,0 +1,59 @@
+<div class="fila" [class.fila--cancelada]="!activa()">
+  <div class="fila__dato">
+    <span class="fila__hora">{{ funcion.inicia_en | date: 'HH:mm' }}</span>
+    <span class="fila__sala">{{ funcion.sala?.nombre }}</span>
+  </div>
+
+  <label class="fila__campo">
+    Formato
+    <select class="adm__entrada" [value]="formato()" (change)="cambiarFormato($event)">
+      @for (f of formatos; track f) {
+        <option [value]="f" [selected]="f === formato()">{{ f }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="fila__campo">
+    Idioma
+    <select class="adm__entrada" [value]="idioma()" (change)="cambiarIdioma($event)">
+      @for (i of idiomas; track i) {
+        <option [value]="i" [selected]="i === idioma()">{{ i }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="fila__campo">
+    Precio base
+    <input
+      class="adm__entrada"
+      type="number"
+      min="0"
+      step="100"
+      [value]="precio()"
+      (input)="cambiarPrecio($event)"
+    />
+  </label>
+
+  <label class="fila__activa">
+    <input type="checkbox" [checked]="activa()" (change)="cambiarActiva($event)" />
+    Activa
+  </label>
+
+  <div class="fila__accion">
+    <button
+      type="button"
+      class="adm__boton"
+      [disabled]="!hayCambios() || guardando()"
+      (click)="guardar()"
+    >
+      {{ guardando() ? 'Guardando...' : 'Guardar' }}
+    </button>
+    @if (mensaje() && !hayCambios()) {
+      <span class="adm__exito" role="status">{{ mensaje() }}</span>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="adm__error fila__error">{{ error() }}</p>
+  }
+</div>

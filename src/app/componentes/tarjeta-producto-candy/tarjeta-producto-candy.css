@@ -27,6 +27,7 @@
 }
 
 .producto__info {
+  flex: 1;
   padding: 0.75rem;
 }
 
@@ -45,4 +46,52 @@
   margin: 0;
   font-weight: 700;
   color: var(--color-violeta);
+}
+
+.producto__carrito {
+  padding: 0 0.75rem 0.75rem;
+}
+
+.producto__agregar {
+  width: 100%;
+  padding: 0.5rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-violeta-cta);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.producto__agregar:hover {
+  filter: brightness(1.15);
+}
+
+.producto__cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.producto__paso {
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font: inherit;
+  font-size: 1.2rem;
+  color: var(--color-texto);
+  background: none;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.producto__paso:hover {
+  border-color: var(--color-violeta);
+  color: var(--color-violeta);
+}
+
+.producto__unidades {
+  font-weight: 700;
 }

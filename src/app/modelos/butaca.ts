@@ -12,3 +12,17 @@ export interface FilaButacas {
   tipo: TipoButaca;
   grupos: Butaca[][];
 }
+
+export const RECARGO_VIP = 1.5;
+
+// Mismas reglas que la función SQL comprar(): R, S, T son VIP y J es la accesible.
+export function tipoDeFila(fila: string): TipoButaca {
+  if (['R', 'S', 'T'].includes(fila)) return 'vip';
+  if (fila === 'J') return 'accesible';
+  return 'normal';
+}
+
+// Solo para mostrar: el precio que se cobra de verdad lo calcula SQL.
+export function precioButaca(precioBase: number, tipo: TipoButaca): number {
+  return tipo === 'vip' ? precioBase * RECARGO_VIP : precioBase;
+}

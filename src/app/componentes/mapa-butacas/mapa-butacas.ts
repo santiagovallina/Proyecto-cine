@@ -1,16 +1,15 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, Input, OnChanges, OnDestroy, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { Butaca, FilaButacas } from '../../modelos/butaca';
+import { Router, RouterLink } from '@angular/router';
+import { Butaca, FilaButacas, precioButaca, tipoDeFila } from '../../modelos/butaca';
 import { EstadoButaca, EstadoVisible } from '../../modelos/estado-butaca';
 import { Funcion } from '../../modelos/funcion';
 import { Butacas } from '../../servicios/butacas';
+import { Carrito } from '../../servicios/carrito';
 import { Funciones } from '../../servicios/funciones';
 import { Spinner } from '../spinner/spinner';
 
 const MAX_BUTACAS = 8;
-const RECARGO_VIP = 1.5;
-const FILAS_VIP = ['R', 'S', 'T'];
 
 function crearGrupo(fila: string, desde: number, cantidad: number, tipo: Butaca['tipo']): Butaca[] {
   return Array.from({ length: cantidad }, (_, i) => ({ fila, numero: desde + i, tipo }));
@@ -20,7 +19,7 @@ function crearGrupo(fila: string, desde: number, cantidad: number, tipo: Butaca[
 function generarFilas(): FilaButacas[] {
   const letras = 'ABCDEFGHILMNOPQRST'.split('');
   const filas: FilaButacas[] = letras.map((letra) => {
-    const tipo = FILAS_VIP.includes(letra) ? 'vip' : 'normal';
+    const tipo = tipoDeFila(letra);
     return {
       letra,
       tipo,
@@ -60,6 +59,8 @@ function clave(butaca: { fila: string; numero: number }): string {
 export class MapaButacas implements OnChanges, OnDestroy {
   private funcionesService = inject(Funciones);
   private butacasService = inject(Butacas);
+  private carrito = inject(Carrito);
+  private router = inject(Router);
 
   @Input({ required: true }) id!: string;
 
@@ -102,10 +103,7 @@ export class MapaButacas implements OnChanges, OnDestroy {
 
   total = computed(() => {
     const precioBase = this.funcion()?.precio_base ?? 0;
-    return this.seleccionadas().reduce(
-      (suma, b) => suma + (b.tipo === 'vip' ? precioBase * RECARGO_VIP : precioBase),
-      0,
-    );
+    return this.seleccionadas().reduce((suma, b) => suma + precioButaca(precioBase, b.tipo), 0);
   });
 
   hayVip = computed(() => this.seleccionadas().some((b) => b.tipo === 'vip'));
@@ -195,6 +193,12 @@ export class MapaButacas implements OnChanges, OnDestroy {
       this.aviso.set((error as { message?: string }).message ?? 'No se pudo reservar la butaca.');
       await this.cargarEstados();
     }
+  }
+
+  // Las butacas ya quedaron reservadas a mi nombre en la base: el carrito solo recuerda la función.
+  continuar() {
+    this.carrito.elegirFuncion(Number(this.id));
+    this.router.navigate(['/candy']);
   }
 
   etiqueta(butaca: Butaca, estado: EstadoVisible): string {

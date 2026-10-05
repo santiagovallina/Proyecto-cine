@@ -24,7 +24,7 @@ async function sha256(texto: string): Promise<string> {
 @Service()
 export class Butacas {
   private supabase = inject(Supabase).client;
-  private sesionId = obtenerSesionId();
+  readonly sesionId = obtenerSesionId();
 
   readonly miHash = sha256(this.sesionId);
 

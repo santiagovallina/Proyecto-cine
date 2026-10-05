@@ -222,3 +222,20 @@
   font-size: 0.85rem;
   color: #fca5a5;
 }
+
+.resumen__continuar {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-violeta-cta);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.resumen__continuar:hover {
+  filter: brightness(1.15);
+}

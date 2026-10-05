@@ -1,5 +1,13 @@
 .candy {
+  max-width: 75rem;
+  margin: 0 auto;
   padding: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .candy {
+    padding: 1rem;
+  }
 }
 
 .candy__seccion {
@@ -16,4 +24,37 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1.25rem;
+}
+
+/* Barra que queda pegada al borde inferior mientras se hace scroll. */
+.candy__barra {
+  position: sticky;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-violeta);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.candy__resumen {
+  margin: 0;
+}
+
+.candy__continuar {
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  background: var(--color-violeta-cta);
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.candy__continuar:hover {
+  filter: brightness(1.15);
 }

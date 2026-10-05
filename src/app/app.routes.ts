@@ -25,6 +25,14 @@ export const routes: Routes = [
       import('./componentes/mapa-butacas/mapa-butacas').then((m) => m.MapaButacas),
   },
   {
+    path: 'checkout',
+    loadComponent: () => import('./componentes/checkout/checkout').then((m) => m.Checkout),
+  },
+  {
+    path: 'entrada/:codigo',
+    loadComponent: () => import('./componentes/entrada/entrada').then((m) => m.Entrada),
+  },
+  {
     path: 'complejo',
     loadComponent: () => import('./componentes/complejo/complejo').then((m) => m.Complejo),
   },

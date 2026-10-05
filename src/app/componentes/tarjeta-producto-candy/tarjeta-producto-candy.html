@@ -9,4 +9,33 @@
     }
     <p class="producto__precio">{{ producto.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</p>
   </div>
+
+  <div class="producto__carrito">
+    @let cantidad = carrito.cantidadDe(producto);
+    @if (cantidad === 0) {
+      <button type="button" class="producto__agregar" (click)="carrito.agregar(producto)">
+        Agregar
+      </button>
+    } @else {
+      <div class="producto__cantidad">
+        <button
+          type="button"
+          class="producto__paso"
+          [attr.aria-label]="'Quitar una unidad de ' + producto.nombre"
+          (click)="carrito.quitar(producto)"
+        >
+          −
+        </button>
+        <span class="producto__unidades" aria-live="polite">{{ cantidad }}</span>
+        <button
+          type="button"
+          class="producto__paso"
+          [attr.aria-label]="'Agregar una unidad de ' + producto.nombre"
+          (click)="carrito.agregar(producto)"
+        >
+          +
+        </button>
+      </div>
+    }
+  </div>
 </article>

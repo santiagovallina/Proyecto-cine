@@ -1,4 +1,6 @@
 .cartelera {
+  max-width: 75rem;
+  margin: 0 auto;
   padding: 1.5rem;
 }
 
@@ -59,4 +61,16 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
+}
+
+/* En el celular: dos pósters por fila, más chicos. */
+@media (max-width: 640px) {
+  .cartelera {
+    padding: 1rem;
+  }
+
+  .cartelera__grilla {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
 }

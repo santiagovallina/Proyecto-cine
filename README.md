@@ -193,7 +193,7 @@ solo se guardan las butacas que tienen algo especial, en `butacas_estado`.
 
 ### `butacas_estado` y selección en tiempo real
 Una butaca que **no** aparece en `butacas_estado` está libre; si aparece, está
-`bloqueada` (alguien la está eligiendo, vence a los 5 minutos) o `vendida`. No se
+`bloqueada` (alguien la está eligiendo, vence a los 10 minutos) o `vendida`. No se
 guarda el estado "libre" porque obligaría a crear ~500 filas por cada función.
 
 - La **clave primaria** `(funcion_id, fila, numero)` impide que dos personas tomen la

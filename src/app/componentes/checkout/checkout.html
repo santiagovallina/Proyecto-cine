@@ -1,0 +1,120 @@
+@if (cargando()) {
+  <app-spinner />
+} @else {
+  <section class="checkout">
+    <h1 class="checkout__titulo">Resumen de tu compra</h1>
+
+    @if (reservaVencida()) {
+      <p class="checkout__aviso checkout__aviso--error">
+        Se venció el tiempo de reserva de tus butacas.
+        <a [routerLink]="['/funcion', carrito.funcionId(), 'butacas']">Volver a elegirlas</a>
+      </p>
+    }
+
+    @if (!hayAlgo()) {
+      <p class="checkout__vacio">Todavía no elegiste nada.</p>
+      <p class="checkout__vacio">
+        <a routerLink="/cartelera">Ver la cartelera</a> ·
+        <a routerLink="/candy">Ir al candy</a>
+      </p>
+    } @else {
+      @if (hayEntradas() && funcion(); as f) {
+        <div class="checkout__bloque">
+          <h2>Entradas</h2>
+          <p class="checkout__pelicula">{{ f.pelicula?.nombre }}</p>
+          <p class="checkout__dato">
+            {{ f.inicia_en | date: 'EEEE d/M HH:mm' }} · {{ f.formato }} · {{ f.idioma }} ·
+            {{ f.sala?.nombre }}
+          </p>
+
+          <ul class="checkout__lista">
+            @for (butaca of butacas(); track butaca.fila + butaca.numero) {
+              <li class="checkout__linea">
+                <span>
+                  Butaca {{ butaca.fila }}{{ butaca.numero }}
+                  @if (butaca.tipo === 'vip') {
+                    <span class="checkout__etiqueta checkout__etiqueta--vip">VIP</span>
+                  } @else if (butaca.tipo === 'accesible') {
+                    <span class="checkout__etiqueta">Accesible</span>
+                  }
+                </span>
+                <span>{{ precioDe(butaca) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (carrito.cantidadTotal() > 0) {
+        <div class="checkout__bloque">
+          <h2>Candy</h2>
+          <ul class="checkout__lista">
+            @for (item of carrito.items(); track item.producto.id) {
+              <li class="checkout__linea">
+                <span>{{ item.cantidad }} × {{ item.producto.nombre }}</span>
+                <span>
+                  {{ item.producto.precio * item.cantidad | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
+                </span>
+              </li>
+            }
+          </ul>
+          <a class="checkout__modificar" routerLink="/candy">Modificar productos</a>
+        </div>
+      }
+
+      <p class="checkout__total">
+        Total: <strong>{{ total() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</strong>
+      </p>
+
+      @if (hayEntradas() && restriccionEdad() > 0) {
+        <div class="checkout__aviso">
+          <p>
+            Esta película es para mayores de {{ restriccionEdad() }} años. Si sos menor de
+            {{ restriccionEdad() }}, tenés que ir acompañado de un adulto.
+          </p>
+          @if (debeConfirmarAviso()) {
+            <label class="checkout__confirmar">
+              <input
+                type="checkbox"
+                [checked]="entiendeAviso()"
+                (change)="entiendeAviso.set(!entiendeAviso())"
+              />
+              Entiendo que, si soy menor, debo ir con un adulto.
+            </label>
+          }
+        </div>
+      }
+
+      <form class="checkout__form" (submit)="pagar($event)" novalidate>
+        <div class="checkout__campo">
+          <label for="email">Email (acá te llega la entrada)</label>
+          <input id="email" type="email" autocomplete="email" [formField]="datosForm.email" />
+          @if (datosForm.email().touched()) {
+            @for (error of datosForm.email().errors(); track error.kind) {
+              <p class="checkout__error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <p class="checkout__nota">
+          Pago simulado: no se cobra nada ni se piden datos de tarjeta.
+        </p>
+
+        @if (error()) {
+          <p class="checkout__error checkout__error--general">{{ error() }}</p>
+        }
+
+        <button
+          class="checkout__boton"
+          type="submit"
+          [disabled]="datosForm().submitting() || reservaVencida()"
+        >
+          {{ datosForm().submitting() ? 'Procesando...' : 'Pagar ' }}
+          @if (!datosForm().submitting()) {
+            {{ total() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
+          }
+        </button>
+      </form>
+    }
+  </section>
+}

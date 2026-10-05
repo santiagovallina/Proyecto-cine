@@ -93,6 +93,9 @@
       @if (aviso()) {
         <p class="resumen__error">{{ aviso() }}</p>
       }
+      @if (seleccionadas().length > 0) {
+        <button type="button" class="resumen__continuar" (click)="continuar()">Continuar</button>
+      }
     </div>
   </section>
 } @else {

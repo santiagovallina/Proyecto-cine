@@ -1,10 +1,23 @@
 .inicio {
+  max-width: 75rem;
+  margin: 0 auto;
   padding: 1.5rem;
 }
 
 .inicio__grilla {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
-  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
+  justify-content: start;
   gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .inicio {
+    padding: 1rem;
+  }
+
+  .inicio__grilla {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
 }

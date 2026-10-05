@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ProductoCandy } from '../../modelos/producto-candy';
+import { Carrito } from '../../servicios/carrito';
 
 @Component({
   imports: [CurrencyPipe],
@@ -9,5 +10,7 @@ import { ProductoCandy } from '../../modelos/producto-candy';
   templateUrl: './tarjeta-producto-candy.html',
 })
 export class TarjetaProductoCandy {
+  carrito = inject(Carrito);
+
   @Input({ required: true }) producto!: ProductoCandy;
 }

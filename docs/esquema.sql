@@ -232,7 +232,7 @@ $$;
 -- =========================================================
 -- Las butacas en sí NO se guardan (el esquema está en Angular). Esta tabla guarda
 -- solo las que tienen algo especial:
---   * 'bloqueada': alguien la está eligiendo (vence a los 5 minutos)
+--   * 'bloqueada': alguien la está eligiendo (vence a los 10 minutos)
 --   * 'vendida':   ya se compró (la pasa a vendida la función de compra)
 -- Si una butaca no aparece acá para esa función, está LIBRE.
 
@@ -261,7 +261,8 @@ create policy "lectura publica" on butacas_estado for select using (true);
 -- Que Supabase transmita los cambios de esta tabla en tiempo real.
 alter publication supabase_realtime add table butacas_estado;
 
--- Bloquea una butaca por 5 minutos. Si ya era tuya, renueva el tiempo.
+-- Bloquea una butaca por 10 minutos (alcanza para pasar por el candy y el checkout).
+-- Si ya era tuya, renueva el tiempo.
 -- Devuelve cuándo vence el bloqueo.
 create or replace function public.bloquear_butaca(
   p_funcion_id bigint,
@@ -275,7 +276,7 @@ set search_path = public
 as $$
 declare
   v_hash text := encode(sha256(convert_to(p_sesion::text, 'UTF8')), 'hex');
-  v_expira timestamptz := now() + interval '5 minutes';
+  v_expira timestamptz := now() + interval '10 minutes';
 begin
   if not exists (
     select 1 from funciones where id = p_funcion_id and activa and inicia_en > now()
@@ -333,6 +334,247 @@ $$;
 
 grant execute on function public.bloquear_butaca(bigint, text, integer, uuid) to anon, authenticated;
 grant execute on function public.liberar_butaca(bigint, text, integer, uuid) to anon, authenticated;
+
+
+-- =========================================================
+-- 6. COMPRAS: compras, entradas e items de candy
+-- =========================================================
+-- Una compra tiene muchas entradas y muchos items de candy (uno a muchos):
+-- la clave foránea va en el lado "muchos".
+
+create table compras (
+  id bigint generated always as identity primary key,
+  -- null = compra anónima (se puede comprar sin registrarse)
+  usuario_id uuid references auth.users(id),
+  email text not null check (email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  -- Es lo que va en el QR y lo que tipea el empleado. Aleatorio, no adivinable.
+  codigo text not null unique,
+  total numeric(10, 2) not null check (total >= 0),
+  -- Se marca cuando el candy bar entrega la comida (el QR deja de servir para eso).
+  candy_retirado boolean not null default false,
+  creada_en timestamptz not null default now()
+);
+
+create table entradas (
+  id bigint generated always as identity primary key,
+  compra_id bigint not null references compras(id) on delete cascade,
+  funcion_id bigint not null references funciones(id),
+  fila text not null,
+  numero integer not null,
+  tipo text not null check (tipo in ('normal', 'accesible', 'vip')),
+  -- Precio de ESTA entrada al momento de comprar (no cambia si el admin cambia el precio).
+  precio numeric(10, 2) not null check (precio >= 0),
+  -- Se marca cuando el empleado la valida en la puerta (el QR deja de servir para entrar).
+  usada boolean not null default false,
+  -- Segunda barrera (la primera es butacas_estado): una butaca, una entrada.
+  unique (funcion_id, fila, numero)
+);
+
+create table items_candy (
+  id bigint generated always as identity primary key,
+  compra_id bigint not null references compras(id) on delete cascade,
+  producto_id bigint not null references productos_candy(id),
+  cantidad integer not null check (cantidad > 0),
+  precio_unitario numeric(10, 2) not null check (precio_unitario >= 0)
+);
+
+alter table compras enable row level security;
+alter table entradas enable row level security;
+alter table items_candy enable row level security;
+
+-- Privadas: cada usuario logueado ve solo lo suyo. Nadie escribe directo,
+-- solo la función comprar(). Los anónimos recuperan su compra con obtener_entrada().
+create policy "ver mis compras" on compras for select
+using (usuario_id = auth.uid());
+
+create policy "ver mis entradas" on entradas for select
+using (exists (select 1 from compras c where c.id = compra_id and c.usuario_id = auth.uid()));
+
+create policy "ver mis items" on items_candy for select
+using (exists (select 1 from compras c where c.id = compra_id and c.usuario_id = auth.uid()));
+
+
+-- Hace TODA la compra en una transacción: si algo falla, no queda nada a medias.
+--   p_butacas: [{"fila": "C", "numero": 5}, ...]   (puede ser vacío si solo compra candy)
+--   p_items:   [{"producto_id": 3, "cantidad": 2}, ...]   (puede ser vacío)
+-- Los precios se calculan ACÁ: del navegador solo llegan ids y cantidades.
+-- Devuelve el código de la compra.
+create or replace function public.comprar(
+  p_funcion_id bigint,
+  p_butacas jsonb,
+  p_items jsonb,
+  p_email text,
+  p_sesion uuid
+) returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_hash text := encode(sha256(convert_to(p_sesion::text, 'UTF8')), 'hex');
+  v_funcion funciones;
+  v_pelicula peliculas;
+  v_nacimiento date;
+  v_compra_id bigint;
+  v_codigo text;
+  v_total numeric := 0;
+  v_butaca record;
+  v_item record;
+  v_tipo text;
+  v_precio numeric;
+begin
+  if jsonb_array_length(p_butacas) = 0 and jsonb_array_length(p_items) = 0 then
+    raise exception 'La compra está vacía';
+  end if;
+
+  -- Validaciones de las entradas antes de crear nada.
+  if jsonb_array_length(p_butacas) > 0 then
+    select * into v_funcion from funciones
+    where id = p_funcion_id and activa and inicia_en > now();
+    if not found then
+      raise exception 'La función no está disponible';
+    end if;
+
+    select * into v_pelicula from peliculas where id = v_funcion.pelicula_id;
+
+    -- Restricción de edad: solo se puede comprobar si el usuario está registrado.
+    -- A los anónimos se les avisa en pantalla que un menor debe ir con un adulto.
+    if v_pelicula.restriccion_edad > 0 and auth.uid() is not null then
+      select fecha_nacimiento into v_nacimiento from perfiles where id = auth.uid();
+      if v_nacimiento is not null
+         and extract(year from age(v_nacimiento)) < v_pelicula.restriccion_edad then
+        raise exception 'No tenés la edad mínima para esta película';
+      end if;
+    end if;
+  end if;
+
+  -- Código único y no adivinable.
+  loop
+    v_codigo := 'CN-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
+    exit when not exists (select 1 from compras where codigo = v_codigo);
+  end loop;
+
+  insert into compras (usuario_id, email, codigo, total)
+  values (auth.uid(), p_email, v_codigo, 0)
+  returning id into v_compra_id;
+
+  -- Entradas: cada butaca tiene que estar bloqueada por ESTA sesión y sin vencer.
+  if jsonb_array_length(p_butacas) > 0 then
+    for v_butaca in
+      select b->>'fila' as fila, (b->>'numero')::integer as numero
+      from jsonb_array_elements(p_butacas) b
+    loop
+      perform 1 from butacas_estado
+      where funcion_id = p_funcion_id and fila = v_butaca.fila and numero = v_butaca.numero
+        and estado = 'bloqueada' and sesion_hash = v_hash and expira_en > now()
+      for update;
+
+      if not found then
+        raise exception 'La butaca % no está reservada por vos (¿venció el tiempo?)',
+          v_butaca.fila || v_butaca.numero;
+      end if;
+
+      -- Mismas reglas que el mapa de Angular: R, S, T son VIP; J es la accesible.
+      v_tipo := case
+        when v_butaca.fila in ('R', 'S', 'T') then 'vip'
+        when v_butaca.fila = 'J' then 'accesible'
+        else 'normal'
+      end;
+      v_precio := case when v_tipo = 'vip' then v_funcion.precio_base * 1.5 else v_funcion.precio_base end;
+
+      insert into entradas (compra_id, funcion_id, fila, numero, tipo, precio)
+      values (v_compra_id, p_funcion_id, v_butaca.fila, v_butaca.numero, v_tipo, v_precio);
+
+      -- Deja de ser un bloqueo temporal: pasa a vendida para siempre.
+      update butacas_estado set estado = 'vendida', expira_en = null
+      where funcion_id = p_funcion_id and fila = v_butaca.fila and numero = v_butaca.numero;
+
+      v_total := v_total + v_precio;
+    end loop;
+  end if;
+
+  -- Candy: el precio sale de la tabla, nunca del navegador.
+  for v_item in
+    select (i->>'producto_id')::bigint as producto_id, (i->>'cantidad')::integer as cantidad
+    from jsonb_array_elements(p_items) i
+  loop
+    if v_item.cantidad < 1 or v_item.cantidad > 20 then
+      raise exception 'Cantidad inválida';
+    end if;
+
+    select precio into v_precio from productos_candy
+    where id = v_item.producto_id and disponible;
+    if v_precio is null then
+      raise exception 'Un producto ya no está disponible';
+    end if;
+
+    insert into items_candy (compra_id, producto_id, cantidad, precio_unitario)
+    values (v_compra_id, v_item.producto_id, v_item.cantidad, v_precio);
+
+    v_total := v_total + v_precio * v_item.cantidad;
+  end loop;
+
+  update compras set total = v_total where id = v_compra_id;
+  return v_codigo;
+end;
+$$;
+
+
+-- Devuelve todo lo necesario para mostrar la entrada (con QR) a partir del código.
+-- El código funciona como una llave: sirve tanto para anónimos como para el empleado.
+create or replace function public.obtener_entrada(p_codigo text)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'codigo', c.codigo,
+    'total', c.total,
+    'creada_en', c.creada_en,
+    'candy_retirado', c.candy_retirado,
+    'entradas', coalesce((
+      select jsonb_agg(
+        jsonb_build_object(
+          'fila', e.fila,
+          'numero', e.numero,
+          'tipo', e.tipo,
+          'precio', e.precio,
+          'usada', e.usada,
+          'pelicula', p.nombre,
+          'restriccion_edad', p.restriccion_edad,
+          'inicia_en', f.inicia_en,
+          'formato', f.formato,
+          'idioma', f.idioma,
+          'sala', s.nombre
+        ) order by e.fila, e.numero
+      )
+      from entradas e
+      join funciones f on f.id = e.funcion_id
+      join salas s on s.id = f.sala_id
+      join peliculas p on p.id = f.pelicula_id
+      where e.compra_id = c.id
+    ), '[]'::jsonb),
+    'items', coalesce((
+      select jsonb_agg(
+        jsonb_build_object(
+          'nombre', pc.nombre,
+          'cantidad', i.cantidad,
+          'precio_unitario', i.precio_unitario
+        )
+      )
+      from items_candy i
+      join productos_candy pc on pc.id = i.producto_id
+      where i.compra_id = c.id
+    ), '[]'::jsonb)
+  )
+  from compras c
+  where c.codigo = upper(trim(p_codigo));
+$$;
+
+grant execute on function public.comprar(bigint, jsonb, jsonb, text, uuid) to anon, authenticated;
+grant execute on function public.obtener_entrada(text) to anon, authenticated;
 
 
 

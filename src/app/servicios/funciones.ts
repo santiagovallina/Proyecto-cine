@@ -17,6 +17,8 @@ export class Funciones {
       .eq('activa', true)
       .gte('inicia_en', desde)
       .lte('inicia_en', hasta)
+      // Las funciones que ya empezaron no se pueden comprar.
+      .gt('inicia_en', new Date().toISOString())
       .order('inicia_en');
 
     if (error) throw error;
@@ -29,6 +31,7 @@ export class Funciones {
       .select('*, sala:salas(id, nombre), pelicula:peliculas(*)')
       .eq('id', id)
       .eq('activa', true)
+      .gt('inicia_en', new Date().toISOString())
       .maybeSingle();
 
     if (error) throw error;

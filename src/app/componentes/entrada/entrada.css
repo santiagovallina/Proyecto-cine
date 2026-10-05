@@ -1,0 +1,84 @@
+.entrada {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.entrada__titulo {
+  margin: 0 0 1rem;
+}
+
+.entrada__codigo-etiqueta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}
+
+.entrada__codigo {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-violeta);
+}
+
+.entrada__nota {
+  margin: 0 0 1.5rem;
+  color: var(--color-texto-muted);
+  font-size: 0.9rem;
+}
+
+.entrada__bloque {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+}
+
+.entrada__bloque h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.entrada__pelicula {
+  margin: 0;
+  font-weight: 700;
+}
+
+.entrada__dato {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--color-texto-muted);
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.entrada__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entrada__linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.entrada__aviso {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+.entrada__total {
+  margin: 0 0 1.5rem;
+  font-size: 1.3rem;
+  text-align: right;
+}
+
+.entrada__volver {
+  color: var(--color-violeta);
+}

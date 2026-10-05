@@ -2,7 +2,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  /* El fondo ocupa todo el ancho, pero el contenido queda dentro de 75rem, centrado
+     (mismo ancho máximo que las páginas, así el logo queda alineado con los títulos). */
+  padding-block: 1rem;
+  padding-inline: max(1.5rem, calc((100% - 75rem) / 2 + 1.5rem));
   background: var(--color-superficie);
   border-bottom: 1px solid var(--color-borde);
 }
@@ -32,7 +35,7 @@
 
 .navbar__links {
   display: flex;
-  gap: 2.5rem;
+  gap: 3.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -122,4 +125,24 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+/* En el celular los links bajan a una segunda fila, así no hace falta scroll lateral. */
+@media (max-width: 640px) {
+  .navbar {
+    flex-wrap: wrap;
+    row-gap: 0.6rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar__links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .navbar__links a {
+    font-size: 1rem;
+  }
 }

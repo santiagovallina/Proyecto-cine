@@ -17,4 +17,18 @@
       }
     }
   }
+
+  @if (carrito.cantidadTotal() > 0 || carrito.funcionId() !== null) {
+    <div class="candy__barra">
+      <p class="candy__resumen">
+        @if (carrito.cantidadTotal() > 0) {
+          {{ carrito.cantidadTotal() }} producto(s) ·
+          <strong>{{ carrito.totalCandy() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</strong>
+        } @else {
+          Tus entradas están reservadas. Podés sumar algo del candy o continuar.
+        }
+      </p>
+      <a class="candy__continuar" routerLink="/checkout">Continuar</a>
+    </div>
+  }
 </section>

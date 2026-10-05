@@ -1,0 +1,71 @@
+@if (cargando()) {
+  <app-spinner />
+} @else if (compra(); as c) {
+  <section class="entrada">
+    <h1 class="entrada__titulo">¡Compra confirmada!</h1>
+    <p class="entrada__codigo-etiqueta">Tu código</p>
+    <p class="entrada__codigo">{{ c.codigo }}</p>
+    <p class="entrada__nota">
+      Presentalo en el cine. Guardalo: con este código podés volver a ver tu entrada.
+    </p>
+
+    @if (c.entradas.length > 0) {
+      <div class="entrada__bloque">
+        <h2>Entradas</h2>
+        <p class="entrada__pelicula">{{ c.entradas[0].pelicula }}</p>
+        <p class="entrada__dato">
+          {{ c.entradas[0].inicia_en | date: 'EEEE d/M HH:mm' }} · {{ c.entradas[0].formato }} ·
+          {{ c.entradas[0].idioma }} · {{ c.entradas[0].sala }}
+        </p>
+        <ul class="entrada__lista">
+          @for (e of c.entradas; track e.fila + e.numero) {
+            <li class="entrada__linea">
+              <span>
+                Butaca {{ e.fila }}{{ e.numero }}
+                @if (e.tipo === 'vip') {
+                  (VIP)
+                } @else if (e.tipo === 'accesible') {
+                  (accesible)
+                }
+              </span>
+              <span>{{ e.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</span>
+            </li>
+          }
+        </ul>
+        @if (c.entradas[0].restriccion_edad > 0) {
+          <p class="entrada__aviso">
+            Película para mayores de {{ c.entradas[0].restriccion_edad }}: los menores deben ir
+            acompañados de un adulto.
+          </p>
+        }
+      </div>
+    }
+
+    @if (c.items.length > 0) {
+      <div class="entrada__bloque">
+        <h2>Candy</h2>
+        <ul class="entrada__lista">
+          @for (i of c.items; track i.nombre) {
+            <li class="entrada__linea">
+              <span>{{ i.cantidad }} × {{ i.nombre }}</span>
+              <span>
+                {{ i.precio_unitario * i.cantidad | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    <p class="entrada__total">
+      Total: <strong>{{ c.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</strong>
+    </p>
+
+    <a class="entrada__volver" routerLink="/cartelera">Volver a la cartelera</a>
+  </section>
+} @else {
+  <section class="entrada">
+    <p>No encontramos una compra con ese código.</p>
+    <a class="entrada__volver" routerLink="/cartelera">Volver a la cartelera</a>
+  </section>
+}

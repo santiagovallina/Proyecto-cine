@@ -126,3 +126,24 @@
 .detalle__vacio {
   color: var(--color-texto-muted);
 }
+
+@media (max-width: 640px) {
+  .detalle {
+    padding: 1rem;
+  }
+
+  .detalle__cabecera {
+    flex-direction: column;
+  }
+
+  .detalle__poster {
+    width: 55%;
+    max-width: 220px;
+    align-self: center;
+  }
+
+  .detalle__horario {
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+}

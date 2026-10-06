@@ -1,12 +1,6 @@
 -- =========================================================
 -- Esquema de la base de datos — Cine SAVA
 -- Proyecto de Programación IV (UTN)
---
--- Este archivo documenta TODO el SQL ejecutado en Supabase,
--- en el orden en que se fue creando. Sirve para:
---   1. Entender la base sin abrir el dashboard.
---   2. Recrear el proyecto desde cero si hiciera falta.
---   3. Material de consulta para la defensa oral.
 -- =========================================================
 
 

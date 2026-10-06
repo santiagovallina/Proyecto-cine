@@ -47,8 +47,7 @@ export class Auth {
 
   /**
    * Pide el rol directo a la base, sin depender de que el oyente global
-   * ya haya terminado de cargar el perfil (evita la carrera justo después
-   * de un login recién hecho).
+   * ya haya terminado de cargar el perfil
    */
   async obtenerRol(id: string): Promise<Rol | null> {
     const { data } = await this.supabase.from('perfiles').select('rol').eq('id', id).single();

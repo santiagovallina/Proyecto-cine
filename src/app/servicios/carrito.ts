@@ -2,7 +2,7 @@ import { computed, Service, signal } from '@angular/core';
 import { ItemCarrito } from '../modelos/item-carrito';
 import { ProductoCandy } from '../modelos/producto-candy';
 
-// La función SQL comprar() rechaza más de 20 unidades de un mismo producto.
+
 const MAX_POR_PRODUCTO = 20;
 
 @Service()

@@ -72,7 +72,7 @@ export class MapaButacas implements OnChanges, OnDestroy {
   readonly maximo = MAX_BUTACAS;
   private readonly todas = this.filas.flatMap((fila) => fila.grupos.flat());
 
-  // Lo que hay en la tabla butacas_estado para esta función, por clave ("C5").
+  // Lo que hay en la tabla butacas_estado para esta función, por clave .
   private estados = signal(new Map<string, EstadoButaca>());
   private miHash = signal('');
   private ahora = signal(Date.now());

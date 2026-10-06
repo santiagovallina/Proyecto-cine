@@ -61,7 +61,7 @@ lo siguiente:
 | Frontend | Angular 22 (standalone components, Signals, Signal Forms) |
 | Backend | Supabase (Postgres, Auth, Storage, RLS, funciones SQL) |
 | Hosting | Firebase Hosting |
-| Estilos | CSS con variables (sin frameworks), convención BEM |
+| Estilos | CSS |
 
 No hay backend propio: toda la lógica que necesita ejecutarse en un lugar confiable
 (asignación de salas, seguridad de datos) vive **dentro de Supabase**, como funciones
@@ -81,7 +81,7 @@ modelos/       → interfaces de TypeScript, calcadas de las tablas
 
 **Regla de diseño que se repite en todo el proyecto:** un componente nunca llama a
 Supabase directamente. Siempre le pide algo a un servicio. Si mañana cambia cómo se
-pide un dato, se arregla en un único lugar, y los componentes ni se enteran.
+pide un dato, se arregla en un único lugar, y los componentes no se enteran.
 
 ### Flujo típico de una pantalla
 
@@ -116,25 +116,14 @@ erDiagram
     SALAS ||--o{ FUNCIONES : aloja
     PELICULAS ||--o{ FUNCIONES : programa
     AUTH_USERS ||--|| PERFILES : extiende
-    FUNCIONES ||--o{ BUTACAS_ESTADO : reserva
-    AUTH_USERS |o--o{ COMPRAS : realiza
-    COMPRAS ||--o{ ENTRADAS : incluye
-    FUNCIONES ||--o{ ENTRADAS : vende
-    COMPRAS ||--o{ ITEMS_CANDY : incluye
-    PRODUCTOS_CANDY ||--o{ ITEMS_CANDY : se_compra_en
 
     PELICULAS {
         bigint id PK
         text nombre
         int duracion_min
         int restriccion_edad
-        boolean activa
     }
     GENEROS {
-        bigint id PK
-        text nombre
-    }
-    CATEGORIAS_CANDY {
         bigint id PK
         text nombre
     }
@@ -142,12 +131,10 @@ erDiagram
         bigint id PK
         text nombre
         numeric precio
-        boolean disponible
     }
     PERFILES {
         uuid id PK
         text rol
-        date fecha_nacimiento
     }
     SALAS {
         bigint id PK
@@ -158,48 +145,15 @@ erDiagram
         timestamptz inicia_en
         tstzrange margen
         text formato
-        numeric precio_base
-    }
-    BUTACAS_ESTADO {
-        bigint funcion_id PK
-        text fila PK
-        int numero PK
-        text estado
-        timestamptz expira_en
-    }
-    COMPRAS {
-        bigint id PK
-        uuid usuario_id FK
-        text email
-        text codigo
-        numeric total
-        boolean candy_retirado
-    }
-    ENTRADAS {
-        bigint id PK
-        text fila
-        int numero
-        text tipo
-        numeric precio
-        boolean usada
-    }
-    ITEMS_CANDY {
-        bigint id PK
-        int cantidad
-        numeric precio_unitario
     }
 ```
-
-Las butacas **no** son una tabla: el mapa de la sala se genera en Angular y `butacas_estado`
-guarda solo las que están bloqueadas o vendidas (una butaca que no figura está libre).
 
 ---
 
 ## Decisiones técnicas y por qué
 
 ### Componentes standalone, sin NgModule (salvo el tema visto en clase)
-Es el estilo por defecto de Angular 22 y el que usa el material de la cátedra. Reduce
-boilerplate frente a NgModules.
+Es el estilo por defecto de Angular 22 y el que usa el material de la cátedra.
 
 ### Signals en vez de solo Observables
 El estado de la app (sesión, carritos, filtros) se representa con `signal`/`computed`.

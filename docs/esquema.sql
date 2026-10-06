@@ -798,4 +798,176 @@ grant execute on function public.actualizar_producto_candy(bigint, numeric, bool
 grant execute on function public.actualizar_funcion(bigint, text, text, numeric, boolean) to authenticated;
 
 
+-- =========================================================
+-- 9. MÁS VENDIDAS, ADMIN DE PELÍCULAS Y REPORTES
+-- =========================================================
+
+-- Películas más vendidas (público: solo devuelve conteos, ningún dato personal).
+-- Las películas sin ventas también entran, ordenadas por id, para que el home nunca quede vacío.
+create or replace function public.peliculas_mas_vendidas(p_limite integer default 3)
+returns table (pelicula_id bigint, entradas_vendidas bigint)
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select p.id, count(e.id)
+  from peliculas p
+  left join funciones f on f.pelicula_id = p.id
+  left join entradas e on e.funcion_id = f.id
+  where p.activa
+  group by p.id
+  order by count(e.id) desc, p.id
+  limit p_limite;
+$$;
+
+-- Crea (p_id null) o edita una película, junto con sus géneros. Devuelve su id.
+create or replace function public.guardar_pelicula(
+  p_id bigint,
+  p_nombre text,
+  p_sinopsis text,
+  p_duracion integer,
+  p_imagen_url text,
+  p_edad integer,
+  p_activa boolean,
+  p_generos bigint[]
+) returns bigint
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id bigint;
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  if trim(coalesce(p_nombre, '')) = '' then
+    raise exception 'El nombre es obligatorio';
+  end if;
+  if trim(coalesce(p_sinopsis, '')) = '' then
+    raise exception 'La sinopsis es obligatoria';
+  end if;
+  if p_duracion is null or p_duracion <= 0 then
+    raise exception 'La duración debe ser mayor a 0';
+  end if;
+  if p_edad not in (0, 13, 18) then
+    raise exception 'La restricción de edad debe ser 0, 13 o 18';
+  end if;
+
+  if p_id is null then
+    insert into peliculas (nombre, sinopsis, duracion_min, imagen_url, restriccion_edad, activa)
+    values (
+      trim(p_nombre), trim(p_sinopsis), p_duracion,
+      nullif(trim(coalesce(p_imagen_url, '')), ''), p_edad, p_activa
+    )
+    returning id into v_id;
+  else
+    update peliculas
+    set nombre = trim(p_nombre),
+        sinopsis = trim(p_sinopsis),
+        duracion_min = p_duracion,
+        imagen_url = nullif(trim(coalesce(p_imagen_url, '')), ''),
+        restriccion_edad = p_edad,
+        activa = p_activa
+    where id = p_id
+    returning id into v_id;
+
+    if v_id is null then
+      raise exception 'Película no encontrada';
+    end if;
+  end if;
+
+  -- Los géneros se reemplazan por los elegidos.
+  delete from peliculas_generos where pelicula_id = v_id;
+  insert into peliculas_generos (pelicula_id, genero_id)
+  select v_id, g from unnest(coalesce(p_generos, '{}'::bigint[])) g;
+
+  return v_id;
+end;
+$$;
+
+-- REPORTES (solo admin). p_dias = cuántos días hacia atrás mirar (7, 30...).
+
+-- Facturación por día, con todos los días del período (los sin ventas figuran en 0).
+create or replace function public.reporte_facturacion(p_dias integer)
+returns table (dia date, cantidad_compras bigint, facturado numeric)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_hoy date := (now() at time zone 'America/Argentina/Buenos_Aires')::date;
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  return query
+  select d::date, count(c.id), coalesce(sum(c.total), 0)
+  from generate_series((v_hoy - (p_dias - 1))::timestamp, v_hoy::timestamp, interval '1 day') d
+  left join compras c
+    on (c.creada_en at time zone 'America/Argentina/Buenos_Aires')::date = d::date
+  group by d
+  order by d;
+end;
+$$;
+
+-- Películas con más entradas vendidas en el período.
+create or replace function public.reporte_peliculas(p_dias integer)
+returns table (nombre_pelicula text, entradas_vendidas bigint, facturado numeric)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  return query
+  select p.nombre, count(e.id), coalesce(sum(e.precio), 0)
+  from entradas e
+  join compras c on c.id = e.compra_id
+  join funciones f on f.id = e.funcion_id
+  join peliculas p on p.id = f.pelicula_id
+  where c.creada_en >= now() - make_interval(days => p_dias)
+  group by p.id, p.nombre
+  order by count(e.id) desc, p.nombre
+  limit 10;
+end;
+$$;
+
+-- Productos del candy más vendidos en el período.
+create or replace function public.reporte_productos(p_dias integer)
+returns table (nombre_producto text, unidades bigint, facturado numeric)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not es_admin() then
+    raise exception 'No autorizado';
+  end if;
+
+  return query
+  select pc.nombre, sum(i.cantidad)::bigint, coalesce(sum(i.cantidad * i.precio_unitario), 0)
+  from items_candy i
+  join compras c on c.id = i.compra_id
+  join productos_candy pc on pc.id = i.producto_id
+  where c.creada_en >= now() - make_interval(days => p_dias)
+  group by pc.id, pc.nombre
+  order by sum(i.cantidad) desc, pc.nombre
+  limit 10;
+end;
+$$;
+
+grant execute on function public.peliculas_mas_vendidas(integer) to anon, authenticated;
+grant execute on function public.guardar_pelicula(bigint, text, text, integer, text, integer, boolean, bigint[]) to authenticated;
+grant execute on function public.reporte_facturacion(integer) to authenticated;
+grant execute on function public.reporte_peliculas(integer) to authenticated;
+grant execute on function public.reporte_productos(integer) to authenticated;
+
+
 

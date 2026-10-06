@@ -1,0 +1,99 @@
+<section class="adm">
+  <h1 class="adm__titulo">Reportes</h1>
+  <p class="adm__ayuda">Ventas del cine: facturación, películas y productos más vendidos.</p>
+
+  <div class="controles">
+    <div class="periodos" role="group" aria-label="Período">
+      @for (periodo of periodos; track periodo.dias) {
+        <button
+          type="button"
+          class="periodos__boton"
+          [class.periodos__boton--activo]="dias() === periodo.dias"
+          (click)="elegirPeriodo(periodo.dias)"
+        >
+          {{ periodo.nombre }}
+        </button>
+      }
+    </div>
+
+    <div class="exportar">
+      <button type="button" class="exportar__boton" [disabled]="!reporte()" (click)="excel()">
+        Descargar CSV
+      </button>
+      <button
+        type="button"
+        class="exportar__boton"
+        [disabled]="!reporte() || exportando()"
+        (click)="pdf()"
+      >
+        {{ exportando() ? 'Generando...' : 'Descargar PDF' }}
+      </button>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <app-spinner />
+  } @else if (error()) {
+    <p class="adm__error">{{ error() }}</p>
+  } @else if (reporte(); as r) {
+    <div class="resumen">
+      <div class="resumen__dato">
+        <span class="resumen__valor">{{ totalFacturado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</span>
+        <span class="resumen__etiqueta">Facturado en el período</span>
+      </div>
+      <div class="resumen__dato">
+        <span class="resumen__valor">{{ totalCompras() }}</span>
+        <span class="resumen__etiqueta">Compras</span>
+      </div>
+    </div>
+
+    <div class="adm__tarjeta">
+      <h2>Facturación diaria</h2>
+      <ul class="barras">
+        @for (f of r.facturacion; track f.dia) {
+          <li class="barras__fila">
+            <span class="barras__etiqueta">{{ f.dia | date: 'EEE d/M' }}</span>
+            <span class="barras__pista">
+              <span class="barras__barra" [style.width]="ancho(f.facturado, maxFacturado())"></span>
+            </span>
+            <span class="barras__valor">{{ f.facturado | currency: 'ARS' : 'symbol-narrow' : '1.0-0' }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="adm__tarjeta">
+      <h2>Películas más vendidas</h2>
+      <ul class="barras">
+        @for (p of r.peliculas; track p.nombre_pelicula) {
+          <li class="barras__fila">
+            <span class="barras__etiqueta barras__etiqueta--ancha">{{ p.nombre_pelicula }}</span>
+            <span class="barras__pista">
+              <span class="barras__barra" [style.width]="ancho(p.entradas_vendidas, maxEntradas())"></span>
+            </span>
+            <span class="barras__valor">{{ p.entradas_vendidas }} entradas</span>
+          </li>
+        } @empty {
+          <li class="adm__vacio">Todavía no hay entradas vendidas en este período.</li>
+        }
+      </ul>
+    </div>
+
+    <div class="adm__tarjeta">
+      <h2>Productos del candy más vendidos</h2>
+      <ul class="barras">
+        @for (p of r.productos; track p.nombre_producto) {
+          <li class="barras__fila">
+            <span class="barras__etiqueta barras__etiqueta--ancha">{{ p.nombre_producto }}</span>
+            <span class="barras__pista">
+              <span class="barras__barra barras__barra--candy" [style.width]="ancho(p.unidades, maxUnidades())"></span>
+            </span>
+            <span class="barras__valor">{{ p.unidades }} u.</span>
+          </li>
+        } @empty {
+          <li class="adm__vacio">Todavía no hay productos vendidos en este período.</li>
+        }
+      </ul>
+    </div>
+  }
+</section>

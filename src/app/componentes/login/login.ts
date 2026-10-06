@@ -47,7 +47,7 @@ export class Login {
       } else if (rol === 'empleado') {
         this.router.navigate(['/empleado']);
       } else {
-        this.router.navigate(['/cartelera']);
+        this.router.navigate(['/']);
       }
     });
   }

@@ -74,7 +74,7 @@ export class Register {
         return;
       }
 
-      this.router.navigate(['/cartelera']);
+      this.router.navigate(['/']);
     });
   }
 }

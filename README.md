@@ -34,6 +34,24 @@ El detalle completo de requerimientos, trazado email por email del enunciado, co
 reglas de negocio y el mapeo a temas de Angular vistos en clase, está en
 [`docs/REQUERIMIENTOS.md`](docs/REQUERIMIENTOS.md).
 
+### Requerimientos funcionales generales
+
+Además de lo descrito en el documento de requerimientos, el sistema tiene que cumplir con
+lo siguiente:
+
+| # | Requerimiento |
+|---|---------------|
+| RF-1 | Estilo visual único y producido. |
+| RF-2 | Interfaces fáciles de navegar para clientes y empleados. |
+| RF-3 | Buen selector de fecha y hora (sin scroll infinito). |
+| RF-4 | Aplicación desplegada con URL funcional. |
+| RF-5 | Código en GitHub + README con arquitectura y decisiones técnicas. |
+| RF-6 | Uso correcto de Angular, buenas prácticas y técnicas vistas en clase. |
+| RF-7 | Integración con Supabase. |
+| RF-8 | Integración de PWA. |
+| RF-9 | Lógica de negocio lograda. |
+| RF-10 | Defensa oral: explicar cada decisión y cada parte del código. |
+
 ---
 
 ## Stack tecnológico
@@ -98,14 +116,25 @@ erDiagram
     SALAS ||--o{ FUNCIONES : aloja
     PELICULAS ||--o{ FUNCIONES : programa
     AUTH_USERS ||--|| PERFILES : extiende
+    FUNCIONES ||--o{ BUTACAS_ESTADO : reserva
+    AUTH_USERS |o--o{ COMPRAS : realiza
+    COMPRAS ||--o{ ENTRADAS : incluye
+    FUNCIONES ||--o{ ENTRADAS : vende
+    COMPRAS ||--o{ ITEMS_CANDY : incluye
+    PRODUCTOS_CANDY ||--o{ ITEMS_CANDY : se_compra_en
 
     PELICULAS {
         bigint id PK
         text nombre
         int duracion_min
         int restriccion_edad
+        boolean activa
     }
     GENEROS {
+        bigint id PK
+        text nombre
+    }
+    CATEGORIAS_CANDY {
         bigint id PK
         text nombre
     }
@@ -113,10 +142,12 @@ erDiagram
         bigint id PK
         text nombre
         numeric precio
+        boolean disponible
     }
     PERFILES {
         uuid id PK
         text rol
+        date fecha_nacimiento
     }
     SALAS {
         bigint id PK
@@ -127,8 +158,40 @@ erDiagram
         timestamptz inicia_en
         tstzrange margen
         text formato
+        numeric precio_base
+    }
+    BUTACAS_ESTADO {
+        bigint funcion_id PK
+        text fila PK
+        int numero PK
+        text estado
+        timestamptz expira_en
+    }
+    COMPRAS {
+        bigint id PK
+        uuid usuario_id FK
+        text email
+        text codigo
+        numeric total
+        boolean candy_retirado
+    }
+    ENTRADAS {
+        bigint id PK
+        text fila
+        int numero
+        text tipo
+        numeric precio
+        boolean usada
+    }
+    ITEMS_CANDY {
+        bigint id PK
+        int cantidad
+        numeric precio_unitario
     }
 ```
+
+Las butacas **no** son una tabla: el mapa de la sala se genera en Angular y `butacas_estado`
+guarda solo las que están bloqueadas o vendidas (una butaca que no figura está libre).
 
 ---
 
@@ -253,9 +316,12 @@ permiso mientras la sesión todavía se está restaurando.
   obligatorio y aviso de edad. Entrada con código y QR (`qrcode`) y PDF descargable (`jspdf`).
 - Panel de empleado: validación de entradas y entrega de candy por código; cada código
   se puede usar una sola vez (lo garantiza la base de datos).
-- Panel de admin (dashboard con rutas hijas): crear y editar funciones, asignar roles
-  por email y editar los precios del candy. Todas las acciones son funciones SQL que
-  verifican que quien llama sea admin.
+- Panel de admin (dashboard con rutas hijas): crear y editar funciones, alta y edición de
+  películas (con géneros), asignar roles por email, editar los precios del candy y reportes
+  (facturación diaria, películas y productos más vendidos, con exportación a Excel y PDF).
+  Todas las acciones son funciones SQL que verifican que quien llama sea admin.
+- Las 3 películas más vendidas del inicio se calculan con las entradas vendidas
+  (función SQL `peliculas_mas_vendidas`).
 - PWA con `@angular/pwa`: se puede instalar en el celular o la computadora (manifest con
   nombre, colores e íconos del cine) y un service worker guarda la aplicación para que abra
   sin conexión, además de las últimas películas y productos del candy vistos. Las compras,

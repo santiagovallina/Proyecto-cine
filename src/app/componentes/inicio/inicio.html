@@ -1,15 +1,90 @@
-<section class="inicio">
-  <h1 class="inicio__titulo">Las más vendidas</h1>
+<h1 class="inicio__oculto">Cine SAVA</h1>
 
-  @if (cargando()) {
-    <app-spinner />
-  } @else {
-    <div class="inicio__grilla">
-      @for (pelicula of masVendidas(); track pelicula.id) {
-        <app-tarjeta-pelicula [pelicula]="pelicula" />
-      } @empty {
-        <p class="inicio__vacio">Todavía no hay películas para mostrar.</p>
+@if (cargando()) {
+  <app-spinner />
+} @else if (masVendidas().length > 0) {
+  <section
+    class="carrusel"
+    aria-roledescription="carrusel"
+    aria-label="Las películas más vendidas"
+    (mouseenter)="pausado.set(true)"
+    (mouseleave)="pausado.set(false)"
+    (focusin)="pausado.set(true)"
+    (focusout)="pausado.set(false)"
+  >
+    <div class="carrusel__ventana">
+      <div class="carrusel__pista" [style.transform]="desplazamiento()">
+        @for (pelicula of masVendidas(); track pelicula.id; let i = $index) {
+          <article
+            class="hero"
+            [attr.aria-hidden]="i !== indice()"
+            [attr.inert]="i !== indice() ? '' : null"
+          >
+            <div class="hero__contenido">
+              <p class="hero__etiqueta">Más vendida #{{ i + 1 }}</p>
+              <h2 class="hero__titulo">{{ pelicula.nombre }}</h2>
+
+              <p class="hero__datos">
+                @for (genero of pelicula.generos; track genero.nombre) {
+                  <span class="hero__chip">{{ genero.nombre }}</span>
+                }
+                <span class="hero__chip">{{ pelicula.duracion_min }} min</span>
+                @if (pelicula.restriccion_edad > 0) {
+                  <span class="hero__chip hero__chip--edad">+{{ pelicula.restriccion_edad }}</span>
+                }
+              </p>
+
+              <p class="hero__sinopsis">{{ pelicula.sinopsis }}</p>
+
+              <div class="hero__acciones">
+                <a class="hero__boton" [routerLink]="['/pelicula', pelicula.id]">Comprar entradas</a>
+                <a class="hero__boton hero__boton--secundario" routerLink="/cartelera">Ver cartelera</a>
+              </div>
+            </div>
+
+            @if (pelicula.imagen_url) {
+              <img class="hero__poster" [src]="pelicula.imagen_url" [alt]="'Póster de ' + pelicula.nombre" />
+            }
+          </article>
+        }
+      </div>
+    </div>
+
+    @if (masVendidas().length > 1) {
+      <button type="button" class="carrusel__flecha carrusel__flecha--izq" aria-label="Película anterior" (click)="anterior()">
+        ‹
+      </button>
+      <button type="button" class="carrusel__flecha carrusel__flecha--der" aria-label="Película siguiente" (click)="siguiente()">
+        ›
+      </button>
+
+      <div class="carrusel__puntos">
+        @for (pelicula of masVendidas(); track pelicula.id; let i = $index) {
+          <button
+            type="button"
+            class="carrusel__punto"
+            [class.carrusel__punto--activo]="i === indice()"
+            [attr.aria-label]="'Ver ' + pelicula.nombre"
+            [attr.aria-current]="i === indice()"
+            (click)="ir(i)"
+          ></button>
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (candyDestacado().length > 0) {
+  <section class="inicio">
+    <div class="inicio__encabezado">
+      <h2 class="inicio__titulo">Candy bar</h2>
+      <a class="inicio__link" routerLink="/candy">Ver todo el candy →</a>
+    </div>
+
+    <div class="inicio__candy">
+      @for (producto of candyDestacado(); track producto.id) {
+        <app-tarjeta-producto-candy [producto]="producto" />
       }
     </div>
-  }
-</section>
+  </section>
+}

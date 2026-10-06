@@ -1,0 +1,137 @@
+<section class="adm">
+  <h1 class="adm__titulo">Películas</h1>
+  <p class="adm__ayuda">
+    Agregá películas nuevas o editá las existentes. Una película desactivada deja de verse en la
+    cartelera (sus funciones y compras quedan intactas).
+  </p>
+
+  <div class="adm__tarjeta">
+    <h2>{{ titulo() }}</h2>
+
+    <form class="adm__form" (submit)="enviar($event)" novalidate>
+      <div class="adm__campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" [formField]="peliculaForm.nombre" />
+        @if (peliculaForm.nombre().touched()) {
+          @for (error of peliculaForm.nombre().errors(); track error.kind) {
+            <p class="adm__error">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="adm__campo">
+        <label for="sinopsis">Sinopsis</label>
+        <textarea id="sinopsis" rows="4" class="adm__entrada" [formField]="peliculaForm.sinopsis"></textarea>
+        @if (peliculaForm.sinopsis().touched()) {
+          @for (error of peliculaForm.sinopsis().errors(); track error.kind) {
+            <p class="adm__error">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="adm__fila">
+        <div class="adm__campo">
+          <label for="duracion">Duración (minutos)</label>
+          <input id="duracion" type="number" [formField]="peliculaForm.duracion_min" />
+          @if (peliculaForm.duracion_min().touched()) {
+            @for (error of peliculaForm.duracion_min().errors(); track error.kind) {
+              <p class="adm__error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="adm__campo">
+          <label for="edad">Restricción de edad</label>
+          <select id="edad" [formField]="peliculaForm.restriccion_edad">
+            @for (edad of edades; track edad.valor) {
+              <option [value]="edad.valor">{{ edad.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="adm__campo">
+        <label for="imagen">Link del póster (URL de la imagen)</label>
+        <input id="imagen" type="url" placeholder="https://..." [formField]="peliculaForm.imagen_url" />
+      </div>
+
+      <fieldset class="generos">
+        <legend>Géneros</legend>
+        @for (genero of generos(); track genero.id) {
+          <label class="generos__opcion">
+            <input
+              type="checkbox"
+              [checked]="generoElegido(genero.id!)"
+              (change)="alternarGenero(genero.id!)"
+            />
+            {{ genero.nombre }}
+          </label>
+        }
+      </fieldset>
+
+      <label class="activa">
+        <input type="checkbox" [checked]="activa()" (change)="cambiarActiva($event)" />
+        Activa (visible en la cartelera)
+      </label>
+
+      @if (mensaje()) {
+        <p class="adm__exito">{{ mensaje() }}</p>
+      }
+      @if (error()) {
+        <p class="adm__error">{{ error() }}</p>
+      }
+
+      <div class="acciones">
+        <button class="adm__boton" type="submit" [disabled]="peliculaForm().submitting()">
+          {{ peliculaForm().submitting() ? 'Guardando...' : 'Guardar película' }}
+        </button>
+        @if (editandoId() !== null) {
+          <button class="acciones__secundario" type="button" (click)="nueva()">
+            Cancelar y agregar otra
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+
+  <div class="adm__tarjeta">
+    <h2>Todas las películas</h2>
+
+    @if (cargando()) {
+      <app-spinner />
+    } @else {
+      <ul class="lista">
+        @for (pelicula of peliculas(); track pelicula.id) {
+          <li class="lista__fila" [class.lista__fila--inactiva]="!pelicula.activa">
+            @if (pelicula.imagen_url) {
+              <img class="lista__poster" [src]="pelicula.imagen_url" [alt]="pelicula.nombre" />
+            } @else {
+              <span class="lista__poster lista__poster--vacio" aria-hidden="true">🎬</span>
+            }
+
+            <span class="lista__datos">
+              <span class="lista__nombre">{{ pelicula.nombre }}</span>
+              <span class="lista__detalle">
+                {{ pelicula.duracion_min }} min
+                @if (pelicula.restriccion_edad > 0) {
+                  · +{{ pelicula.restriccion_edad }}
+                }
+                @for (genero of pelicula.generos; track genero.nombre) {
+                  · {{ genero.nombre }}
+                }
+              </span>
+            </span>
+
+            @if (!pelicula.activa) {
+              <span class="lista__estado">Inactiva</span>
+            }
+
+            <button type="button" class="lista__editar" (click)="editar(pelicula)">Editar</button>
+          </li>
+        } @empty {
+          <li class="adm__vacio">Todavía no hay películas.</li>
+        }
+      </ul>
+    }
+  </div>
+</section>

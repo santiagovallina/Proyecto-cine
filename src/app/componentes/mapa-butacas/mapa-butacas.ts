@@ -217,7 +217,7 @@ export class MapaButacas implements OnChanges, OnDestroy {
     this.estados.set(new Map(lista.map((e) => [clave(e), e])));
   }
 
-  // Eventos de Realtime. Mis propias acciones usan las mismas dos funciones (es idempotente).
+  // Eventos de Realtime. Mis propias acciones usan las mismas dos funciones.
   private aplicarCambio(registro: EstadoButaca, borrado: boolean) {
     if (borrado) {
       this.quitarEstado(clave(registro));

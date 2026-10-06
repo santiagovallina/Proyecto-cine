@@ -150,25 +150,8 @@ Puntos, crédito, **"Mis películas"** (historial visual con calificación propi
 alertas de "Próximamente" activadas.
 
 ---
-// pasarlo
-## 12. Requerimientos no funcionales
 
-| # | Requerimiento |
-|---|---------------|
-| RNF-1 | Estilo visual único y producido. |
-| RNF-2 | Interfaces fáciles de navegar para clientes y empleados. |
-| RNF-3 | Buen selector de fecha y hora (sin scroll infinito). |
-| RNF-4 | Aplicación desplegada con URL funcional. |
-| RNF-5 | Código en GitHub + README con arquitectura y decisiones técnicas. |
-| RNF-6 | Uso correcto de Angular, buenas prácticas y técnicas vistas en clase. |
-| RNF-7 | Integración con Supabase. |
-| RNF-8 | Integración de PWA. |
-| RNF-9 | Lógica de negocio lograda. |
-| RNF-10 | Defensa oral: explicar cada decisión y cada parte del código. |
-
----
-
-## 13. Reglas de negocio críticas 
+## 12. Reglas de negocio críticas
 
 1. Nunca dos funciones en la misma sala al mismo tiempo (+30 min de recambio).
 2. Asignación de sala automática al crear una función.

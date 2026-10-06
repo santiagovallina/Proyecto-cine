@@ -1,14 +1,234 @@
+
+.inicio__oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .inicio {
   max-width: 75rem;
   margin: 0 auto;
   padding: 1.5rem;
 }
 
-.inicio__grilla {
+.inicio__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.inicio__encabezado .inicio__titulo {
+  margin: 0;
+}
+
+.inicio__link {
+  font-size: 0.9rem;
+  color: var(--color-violeta);
+  text-decoration: none;
+}
+
+.inicio__link:hover {
+  text-decoration: underline;
+}
+
+.inicio__candy {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 220px));
   justify-content: start;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+/* Carrusel: una tira horizontal con todas las diapositivas, que se corre a la izquierda con
+   transform. La ventana recorta lo que no es la diapositiva actual. */
+.carrusel {
+  position: relative;
+  max-width: 75rem;
+  margin: 1.5rem auto 0;
+}
+
+.carrusel__ventana {
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: 16px;
+}
+
+.carrusel__pista {
+  display: flex;
+  transition: transform 0.7s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carrusel__pista {
+    transition: none;
+  }
+}
+
+.hero {
+  display: flex;
+  flex: 0 0 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  box-sizing: border-box;
+  padding: 2rem 4rem;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(124, 58, 237, 0.45), transparent 55%),
+    linear-gradient(135deg, var(--color-superficie), var(--color-fondo));
+}
+
+.hero__contenido {
+  max-width: 36rem;
+}
+
+.hero__etiqueta {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-violeta);
+}
+
+.hero__titulo {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.hero__datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.hero__chip {
+  padding: 0.15rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--color-violeta);
+  border: 1px solid var(--color-violeta);
+  border-radius: 999px;
+}
+
+.hero__chip--edad {
+  color: #fff;
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* Sinopsis recortada a 3 líneas. */
+.hero__sinopsis {
+  margin: 0 0 1.5rem;
+  color: var(--color-texto-muted);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero__boton {
+  padding: 0.8rem 1.6rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  background: var(--color-violeta-cta);
+  border: 1px solid var(--color-violeta-cta);
+  border-radius: 8px;
+  transition: filter 0.2s;
+}
+
+.hero__boton:hover {
+  filter: brightness(1.15);
+}
+
+.hero__boton--secundario {
+  color: var(--color-texto);
+  background: none;
+  border-color: var(--color-borde);
+}
+
+.hero__boton--secundario:hover {
+  border-color: var(--color-violeta);
+}
+
+.hero__poster {
+  flex-shrink: 0;
+  width: 14rem;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.35);
+}
+
+.carrusel__flecha {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0 0.15rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-texto);
+  background: rgba(22, 19, 31, 0.8);
+  border: 1px solid var(--color-borde);
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.carrusel__flecha:hover {
+  background: var(--color-violeta-cta);
+  border-color: var(--color-violeta-cta);
+}
+
+.carrusel__flecha--izq {
+  left: 0.75rem;
+}
+
+.carrusel__flecha--der {
+  right: 0.75rem;
+}
+
+.carrusel__puntos {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.carrusel__punto {
+  width: 2.5rem;
+  height: 0.35rem;
+  padding: 0;
+  background: var(--color-borde);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.carrusel__punto--activo {
+  background: var(--color-violeta);
 }
 
 @media (max-width: 640px) {
@@ -16,7 +236,30 @@
     padding: 1rem;
   }
 
-  .inicio__grilla {
+  .carrusel {
+    margin: 1rem 1rem 0;
+  }
+
+  .hero {
+    flex-direction: column-reverse;
+    gap: 1.25rem;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+
+  .hero__poster {
+    width: 9rem;
+    align-self: center;
+  }
+
+  /* En el celular las flechas se achican y los puntos alcanzan para navegar. */
+  .carrusel__flecha {
+    top: 8rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.3rem;
+  }
+
+  .inicio__candy {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }

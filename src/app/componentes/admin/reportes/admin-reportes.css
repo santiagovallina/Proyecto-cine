@@ -1,0 +1,130 @@
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.periodos {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.periodos__boton,
+.exportar__boton {
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.periodos__boton:hover,
+.exportar__boton:hover:not(:disabled) {
+  border-color: var(--color-violeta);
+}
+
+.periodos__boton--activo {
+  color: #fff;
+  background: var(--color-violeta-cta);
+  border-color: var(--color-violeta-cta);
+}
+
+.exportar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.exportar__boton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.resumen__dato {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-violeta);
+  border-radius: 12px;
+}
+
+.resumen__valor {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.resumen__etiqueta {
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}
+
+/* Gráfico de barras con CSS: el ancho de cada barra es un porcentaje del valor más grande. */
+.barras {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.barras__fila {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 7.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+}
+
+.barras__etiqueta {
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+  text-transform: capitalize;
+}
+
+.barras__etiqueta--ancha {
+  color: var(--color-texto);
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+.barras__pista {
+  height: 0.9rem;
+  background: var(--color-fondo);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barras__barra {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  background: var(--color-violeta-cta);
+  border-radius: 999px;
+}
+
+.barras__barra--candy {
+  background: var(--color-accesible);
+}
+
+.barras__valor {
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .barras__fila {
+    grid-template-columns: 4.5rem 1fr 6rem;
+    gap: 0.5rem;
+  }
+}

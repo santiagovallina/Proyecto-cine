@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
-import { CanMatchFn, Router } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { Rol } from '../modelos/perfil';
 import { Auth } from '../servicios/auth';
 
-export function rolGuard(rolesPermitidos: Rol[]): CanMatchFn {
+export function rolGuard(rolesPermitidos: Rol[]): CanActivateFn {
   return async () => {
     const auth = inject(Auth);
     const router = inject(Router);
@@ -23,6 +23,6 @@ export function rolGuard(rolesPermitidos: Rol[]): CanMatchFn {
       return true;
     }
 
-    return router.createUrlTree(['/cartelera']);
+    return router.createUrlTree(['/']);
   };
 }

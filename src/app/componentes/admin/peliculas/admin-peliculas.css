@@ -1,0 +1,122 @@
+textarea.adm__entrada {
+  resize: vertical;
+}
+
+.generos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+}
+
+.generos legend {
+  padding: 0 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-texto-muted);
+}
+
+.generos__opcion,
+.activa {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.acciones__secundario {
+  padding: 0.65rem 1.1rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: none;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.acciones__secundario:hover {
+  border-color: var(--color-violeta);
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista__fila {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.lista__fila--inactiva {
+  opacity: 0.6;
+}
+
+.lista__poster {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.lista__poster--vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-borde);
+}
+
+.lista__datos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lista__nombre {
+  font-weight: 600;
+}
+
+.lista__detalle {
+  font-size: 0.8rem;
+  color: var(--color-texto-muted);
+}
+
+.lista__estado {
+  flex-shrink: 0;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  color: #fca5a5;
+  border: 1px solid #ef4444;
+  border-radius: 999px;
+}
+
+.lista__editar {
+  flex-shrink: 0;
+  padding: 0.4rem 0.9rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--color-violeta);
+  background: none;
+  border: 1px solid var(--color-violeta);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.lista__editar:hover {
+  background: rgba(167, 139, 250, 0.15);
+}
